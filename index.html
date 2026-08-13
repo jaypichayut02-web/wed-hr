@@ -45,12 +45,12 @@
     <div id="root"></div>
 
     <script data-cfasync="false" type="text/babel" data-presets="react" data-type="module">
-        /* STREAMING_CHUNK:Configuring Supabase API credentials and initial mock data... */
+        /* STREAMING_CHUNK:Configuring Supabase credentials and initial mock datasets... */
         // ------------------------------------------------------------------------
-        // 🔑 ใส่ Supabase URL และ Anon Key ของคุณตรงนี้เพื่อเชื่อมต่อฐานข้อมูลจริง
+        // 🔑 ใส่ Supabase URL และ Anon Key ของคุณตรงนี้ (ต้องเป็น Key ชุดเดียวกับหน้าสมัครงาน)
         // ------------------------------------------------------------------------
-        const SUPABASE_URL = "";  // เช่น "https://bxewjkhvguphfcuiwpjg.supabase.co"
-        const SUPABASE_KEY = "";  // เช่น "sb_publishable_64TozLYNslnv0Ub8951hFg_dwQy2T_A"
+        const SUPABASE_URL = "";  // เช่น "https://xyzcompany.supabase.co"
+        const SUPABASE_KEY = "";  // เช่น "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
         // ------------------------------------------------------------------------
 
         const INITIAL_BRANCHES = [
@@ -110,102 +110,6 @@
                 referral_name: 'ครูพี่เอก',
                 resume_url: 'https://drive.google.com/file/d/sample-resume-01/view',
                 created_at: '2026-08-10',
-                evaluations: {
-                    screening: { status: 'Pass', note: 'ประวัติและวุฒิตรงสาย ผลการเรียนดีมาก' },
-                    interview: { status: 'Pass', note: 'ทัศนคติดี สื่อสารชัดเจน มีบุคลิกภาพความเป็นครูสูง' }
-                }
-            },
-            {
-                id: 'c2',
-                full_name: 'นางสาว ณิชาภัทร วงศ์สว่าง',
-                nickname: 'ณิชา',
-                job_title: 'ติวเตอร์ (พาร์ทไทม์) - ฟิสิกส์ A-Level',
-                candidate_type: 'Tutor',
-                stage: 'Screening',
-                branchId: 'b2',
-                branch_preference: 'เดอะไบรท์ พระราม 2',
-                phone: '089-876-5432',
-                email: 'nichapat.p@gmail.com',
-                line_id: 'nicha_phy',
-                birthdate: '1999-03-22',
-                age: '27',
-                address: '88/12 ถนนพระราม 2 แขวงแสมดำ เขตบางขุนเทียน กรุงเทพฯ',
-                pdpa_consent: 'ยินยอม',
-                teaching_detail: 'ฟิสิกส์ ม.4-ม.6 ตะลุยโจทย์ A-Level ฟิสิกส์',
-                experience: 'เป็นติวเตอร์อิสระสอนตัวต่อตัวมา 2 ปี มีผลงานนักเรียนสอบติดวิศวฯ จุฬาฯ',
-                education_level: 'ปริญญาตรี',
-                faculty: 'คณะวิศวกรรมศาสตร์ สาขาวิศวกรรมเครื่องกล จุฬาลงกรณ์มหาวิทยาลัย',
-                reason_for_joining: 'ต้องการหาประสบการณ์การสอนกวดวิชารูปแบบสถาบันที่มีระบบมาตรฐาน',
-                start_date: '1 กันยายน 2026',
-                expected_salary: '500 - 600 บาท/ชม.',
-                source: 'Fastwork',
-                referral_name: '-',
-                resume_url: 'https://drive.google.com/file/d/sample-resume-02/view',
-                created_at: '2026-08-12',
-                evaluations: {}
-            },
-            {
-                id: 'c3',
-                full_name: 'นาย ธนกฤต ชัยเจริญ',
-                nickname: 'กฤต',
-                job_title: 'Operation Admin สาขาเดอะไบรท์ พระราม 2',
-                candidate_type: 'Support',
-                stage: 'Probation',
-                probationDaysLeft: 42,
-                branchId: 'b2',
-                branch_preference: 'เดอะไบรท์ พระราม 2',
-                phone: '086-111-2233',
-                email: 'tanakrit.c@gmail.com',
-                line_id: 'krit_admin',
-                birthdate: '1997-11-05',
-                age: '28',
-                address: '45/9 ถนนสุขสวัสดิ์ จ.สมุทรปราการ',
-                pdpa_consent: 'ยินยอม',
-                teaching_detail: '-',
-                experience: 'เคยทำ Admin ประจำศูนย์การเรียนรู้ 2 ปี ถนัดงานเอกสาร คีย์ข้อมูล และต้อนรับผู้ปกครอง',
-                education_level: 'ปริญญาตรี',
-                faculty: 'คณะบริหารธุรกิจ สาขาการจัดการ',
-                reason_for_joining: 'มองหาความก้าวหน้าในสถาบันการศึกษาที่มีความมั่นคง',
-                start_date: 'เริ่มได้ทันที',
-                expected_salary: '22,000 บาท',
-                source: 'กลุ่มหางานใน Facebook',
-                referral_name: '-',
-                resume_url: 'https://drive.google.com/file/d/sample-resume-03/view',
-                created_at: '2026-07-01',
-                evaluations: {
-                    screening: { status: 'Pass', note: 'ประสบการณ์ตรงสาย' },
-                    interview: { status: 'Pass', note: 'อัธยาศัยดี มีความละเอียดรอบคอบ' },
-                    offer: { status: 'Accepted', note: 'ตกลงเริ่มงานสัญญาบรรจุทดลองงาน 90 วัน' }
-                }
-            },
-            {
-                id: 'c4',
-                full_name: 'นางสาว มลธิดา รัตนโชติ',
-                nickname: 'มุก',
-                job_title: 'คุณครูประจำ - เคมี',
-                candidate_type: 'Tutor',
-                stage: 'Passed Probation',
-                probationDaysLeft: 0,
-                branchId: 'b1',
-                branch_preference: 'Happitat บางนา (ชั้น 5)',
-                phone: '082-999-8877',
-                email: 'mook.molthida@gmail.com',
-                line_id: 'mook_chem',
-                birthdate: '1998-01-10',
-                age: '28',
-                address: '99/4 บางนา กรุงเทพฯ',
-                pdpa_consent: 'ยินยอม',
-                teaching_detail: 'เคมี ม.4-ม.6',
-                experience: 'ประสบการณ์สอนเคมี 3 ปี',
-                education_level: 'ปริญญาตรี',
-                faculty: 'คณะครุศาสตร์ สาขาวิทยาศาสตร์-เคมี',
-                reason_for_joining: 'อยากพัฒนาการเรียนการสอนสไตล์Active Learning',
-                start_date: '2026-05-01',
-                expected_salary: '32,000 บาท',
-                source: 'เพื่อนแนะนำ',
-                referral_name: 'ครูพี่เบสท์',
-                resume_url: 'https://drive.google.com/file/d/sample-resume-04/view',
-                created_at: '2026-04-15',
                 evaluations: {}
             }
         ];
@@ -228,25 +132,6 @@
                     { name: 'Classroom Management (การควบคุมชั้นเรียน)', score: 5, target: 5 },
                     { name: 'Communication (การสื่อสารและน้ำเสียง)', score: 5, target: 5 },
                     { name: 'Student Engagement (การสร้างส่วนร่วมเด็ก)', score: 4, target: 5 }
-                ]
-            },
-            {
-                id: 'e2',
-                empCode: 'LNC-EMP-002',
-                name: 'ครูพลอย (ชลธิชา สุขดี)',
-                role: 'Tutor - Chemistry',
-                dept: 'Academic/Tutor',
-                branchId: 'b2',
-                branchName: 'เดอะไบรท์ พระราม 2',
-                type: 'Part-Time',
-                source: 'Fastwork',
-                startDate: '2025-06-01',
-                skills: [
-                    { name: 'Subject Knowledge (ความแม่นยำเนื้อหา)', score: 5, target: 5 },
-                    { name: 'Teaching Technique (เทคนิคการสอน)', score: 3, target: 4 },
-                    { name: 'Classroom Management (การควบคุมชั้นเรียน)', score: 2, target: 4 },
-                    { name: 'Communication (การสื่อสารและน้ำเสียง)', score: 4, target: 4 },
-                    { name: 'Student Engagement (การสร้างส่วนร่วมเด็ก)', score: 3, target: 4 }
                 ]
             }
         ];
@@ -278,7 +163,7 @@
             }
         ];
 
-        /* STREAMING_CHUNK:Defining shared UI components and badge utilities... */
+        /* STREAMING_CHUNK:Defining NavItem and StatCard shared components... */
         function NavItem({ icon, label, badge, active, onClick }) {
             return (
                 <button
@@ -310,7 +195,7 @@
                     <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{title}</span>
                         <div className={`p-2 rounded-lg bg-zinc-50 ${color}`}>
-                            <i data-lucide={icon} className="w-5 h-5"></i>
+                            <i data-lucide="tag" className="w-5 h-5"></i>
                         </div>
                     </div>
                     <div className="flex items-baseline space-x-2">
@@ -321,7 +206,7 @@
             );
         }
 
-        /* STREAMING_CHUNK:Defining Candidate Inspection Modal with Source History... */
+        /* STREAMING_CHUNK:Candidate Full Registration Detail Inspector Modal... */
         function CandidateDetailModal({ candidate, onClose, onActionClick, onConvertToEmployee, onDeleteClick }) {
             if (!candidate) return null;
 
@@ -349,9 +234,9 @@
                             <button onClick={onClose} className="text-zinc-400 hover:text-white font-bold p-1 text-lg">✕</button>
                         </div>
 
-                        {/* Body - Detailed Inspection Fields */}
+                        {/* Body */}
                         <div className="p-6 overflow-y-auto custom-scrollbar space-y-6 text-xs text-zinc-800">
-                            {/* Section 1: Personal & Contact */}
+                            {/* Section 1 */}
                             <div className="space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-1.5 flex items-center space-x-2">
                                     <i data-lucide="user" className="w-4 h-4 text-lnc-pink"></i>
@@ -369,7 +254,7 @@
                                 </div>
                             </div>
 
-                            {/* Section 2: Application Source Reference */}
+                            {/* Section 2 */}
                             <div className="space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-1.5 flex items-center space-x-2">
                                     <i data-lucide="compass" className="w-4 h-4 text-lnc-pink"></i>
@@ -381,7 +266,7 @@
                                 </div>
                             </div>
 
-                            {/* Section 3: Teaching & Application Specs */}
+                            {/* Section 3 */}
                             <div className="space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-1.5 flex items-center space-x-2">
                                     <i data-lucide="book-open" className="w-4 h-4 text-lnc-pink"></i>
@@ -395,7 +280,7 @@
                                 </div>
                             </div>
 
-                            {/* Section 4: Education & Expectations */}
+                            {/* Section 4 */}
                             <div className="space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-1.5 flex items-center space-x-2">
                                     <i data-lucide="graduation-cap" className="w-4 h-4 text-lnc-pink"></i>
@@ -409,7 +294,7 @@
                                 </div>
                             </div>
 
-                            {/* Section 5: Resume & Documents */}
+                            {/* Section 5: Resume */}
                             <div className="p-4 bg-zinc-900 text-white rounded-xl flex items-center justify-between">
                                 <div className="flex items-center space-x-3">
                                     <div className="p-2 bg-lnc-pink text-white rounded-lg">
@@ -417,21 +302,21 @@
                                     </div>
                                     <div>
                                         <h5 className="font-bold text-xs">เอกสาร Resume / Portfolio / CV</h5>
-                                        <p className="text-[10px] text-zinc-400">ลิงก์แนบจาก Google Drive หรือ Canva</p>
+                                        <p className="text-[10px] text-zinc-400">ลิงก์แนบ หรือไฟล์อัปโหลด Supabase Storage</p>
                                     </div>
                                 </div>
-                                {candidate.resume_url ? (
+                                {candidate.resume_url && candidate.resume_url.startsWith('http') ? (
                                     <a href={candidate.resume_url} target="_blank" rel="noreferrer" className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center space-x-1.5 transition">
                                         <span>เปิดดู Resume</span>
                                         <i data-lucide="external-link" className="w-3.5 h-3.5"></i>
                                     </a>
                                 ) : (
-                                    <span className="text-xs text-zinc-400 italic">ไม่มีลิงก์เอกสาร</span>
+                                    <span className="text-xs text-zinc-300 italic">{candidate.resume_url || 'ไม่ได้แนบเอกสาร'}</span>
                                 )}
                             </div>
                         </div>
 
-                        {/* Footer Action Bar */}
+                        {/* Footer Bar */}
                         <div className="p-4 bg-zinc-50 border-t border-zinc-200 flex items-center justify-between shrink-0">
                             <button
                                 onClick={() => onDeleteClick(candidate.id)}
@@ -465,7 +350,7 @@
             );
         }
 
-        /* STREAMING_CHUNK:Defining Stage Action and Candidate Removal Modals... */
+        /* STREAMING_CHUNK:Defining Stage Action, Delete, and Dev Modals... */
         function StageActionModal({ candidate, onClose, onSaveNextStage }) {
             if (!candidate) return null;
 
@@ -589,7 +474,6 @@
             );
         }
 
-        /* STREAMING_CHUNK:Defining Confirm Delete Modal... */
         function ConfirmDeleteModal({ candidateId, onClose, onConfirm }) {
             return (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -599,7 +483,7 @@
                         </div>
                         <div className="space-y-1">
                             <h3 className="font-bold text-base text-zinc-900">ยืนยันการลบใบสมัคร?</h3>
-                            <p className="text-xs text-zinc-500">ข้อมูลใบสมัครรหัส ({candidateId}) จะถูกลบออกจากฐานข้อมูลหลังบ้านอย่างถาวร</p>
+                            <p className="text-xs text-zinc-500">ข้อมูลใบสมัครจะถูกลบออกจากฐานข้อมูลหลังบ้านอย่างถาวร</p>
                         </div>
                         <div className="flex space-x-2 pt-2">
                             <button onClick={onClose} className="w-1/2 py-2 border rounded-xl text-xs font-bold text-zinc-700">ยกเลิก</button>
@@ -610,136 +494,11 @@
             );
         }
 
-        /* STREAMING_CHUNK:Defining Dev Plan and Job Opening Creation Modals... */
-        function CreateDevPlanModal({ employee, onClose, onSave }) {
-            const [type, setType] = React.useState('Shadowing');
-            const [title, setTitle] = React.useState('');
-            const [mentor, setMentor] = React.useState('ครูพี่เอก (Academic Head)');
-            const [targetDate, setTargetDate] = React.useState('');
-
-            const handleSubmit = (e) => {
-                e.preventDefault();
-                onSave({
-                    id: 'd_' + Date.now(),
-                    empId: employee.id,
-                    empName: employee.name,
-                    type,
-                    title,
-                    skillGap: 'พัฒนาทักษะเฉพาะทาง',
-                    mentor,
-                    targetDate,
-                    status: 'In Progress'
-                });
-            };
-
-            return (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl max-w-md w-full space-y-4 text-xs shadow-2xl">
-                        <div className="flex justify-between items-center border-b pb-2">
-                            <h3 className="font-bold text-base text-zinc-900">สร้างแผนพัฒนา: {employee.name}</h3>
-                            <button type="button" onClick={onClose} className="text-zinc-400 font-bold">✕</button>
-                        </div>
-                        <div>
-                            <label className="font-bold block mb-1">รูปแบบการพัฒนา *</label>
-                            <select value={type} onChange={e => setType(e.target.value)} className="w-full border p-2.5 rounded-xl bg-white">
-                                <option value="Shadowing">Shadowing (สังเกตการณ์คลาสครูรุ่นพี่)</option>
-                                <option value="Coaching">Coaching (สอนงานแบบตัวต่อตัว)</option>
-                                <option value="OJT">OJT (On-the-Job Training)</option>
-                                <option value="Workshop">Workshop</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="font-bold block mb-1">หัวข้อกิจกรรมพัฒนา *</label>
-                            <input type="text" placeholder="เช่น Shadowing เทคนิคคุมเด็กหลังห้อง..." value={title} onChange={e => setTitle(e.target.value)} className="w-full border p-2 rounded-lg" required />
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                            <div>
-                                <label className="font-bold block mb-1">Mentor / ผู้ดูแล *</label>
-                                <input type="text" value={mentor} onChange={e => setMentor(e.target.value)} className="w-full border p-2 rounded-lg" required />
-                            </div>
-                            <div>
-                                <label className="font-bold block mb-1">กำหนดเสร็จ *</label>
-                                <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} className="w-full border p-2 rounded-lg" required />
-                            </div>
-                        </div>
-                        <div className="flex justify-end space-x-2 pt-2 border-t">
-                            <button type="button" onClick={onClose} className="px-3 py-2 border rounded-lg">ยกเลิก</button>
-                            <button type="submit" className="px-4 py-2 bg-lnc-pink text-white font-bold rounded-lg hover:bg-rose-700">บันทึกแผนพัฒนา</button>
-                        </div>
-                    </form>
-                </div>
-            );
-        }
-
-        function CreateJobModal({ branches, onClose, onSave }) {
-            const [title, setTitle] = React.useState('');
-            const [dept, setDept] = React.useState('Academic/Tutor');
-            const [branchId, setBranchId] = React.useState(branches[0]?.id || 'b1');
-            const [type, setType] = React.useState('Full-Time');
-
-            const handleSubmit = (e) => {
-                e.preventDefault();
-                onSave({
-                    id: 'j_' + Date.now(),
-                    title,
-                    dept,
-                    branchId,
-                    type,
-                    status: 'Open'
-                });
-            };
-
-            return (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl max-w-md w-full space-y-4 text-xs shadow-2xl">
-                        <div className="flex justify-between items-center border-b pb-2">
-                            <h3 className="font-bold text-base text-zinc-900">เปิดตำแหน่งงานใหม่</h3>
-                            <button type="button" onClick={onClose} className="text-zinc-400 font-bold">✕</button>
-                        </div>
-                        <div>
-                            <label className="font-bold block mb-1">ชื่อตำแหน่ง *</label>
-                            <input type="text" placeholder="เช่น คุณครูประจำ - ชีววิทยา" value={title} onChange={e => setTitle(e.target.value)} className="w-full border p-2 rounded-lg" required />
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                            <div>
-                                <label className="font-bold block mb-1">แผนก *</label>
-                                <select value={dept} onChange={e => setDept(e.target.value)} className="w-full border p-2 rounded-lg bg-white">
-                                    <option value="Academic/Tutor">Academic/Tutor</option>
-                                    <option value="Branch Staff">Branch Staff</option>
-                                    <option value="Support">Support</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="font-bold block mb-1">รูปแบบ *</label>
-                                <select value={type} onChange={e => setType(e.target.value)} className="w-full border p-2 rounded-lg bg-white">
-                                    <option value="Full-Time">Full-Time</option>
-                                    <option value="Part-Time">Part-Time</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label className="font-bold block mb-1">ประจำสาขา *</label>
-                            <select value={branchId} onChange={e => setBranchId(e.target.value)} className="w-full border p-2 rounded-lg bg-white">
-                                {branches.map(b => (
-                                    <option key={b.id} value={b.id}>{b.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex justify-end space-x-2 pt-2 border-t">
-                            <button type="button" onClick={onClose} className="px-3 py-2 border rounded-lg">ยกเลิก</button>
-                            <button type="submit" className="px-4 py-2 bg-lnc-pink text-white font-bold rounded-lg hover:bg-rose-700">เปิดรับสมัคร</button>
-                        </div>
-                    </form>
-                </div>
-            );
-        }
-
-        /* STREAMING_CHUNK:Defining Dashboard View with Application Source Analytics... */
+        /* STREAMING_CHUNK:Defining Dashboard and Recruitment Views with Live Refresh... */
         function DashboardView({ candidates, employees, developments, trainings, jobs, setSelectedCandidateDetail }) {
             const probationStaff = candidates.filter(c => c.stage === 'Probation');
             const passedStaff = candidates.filter(c => c.stage === 'Passed Probation');
 
-            // Calculate Application Source Analytics
             const sources = ['เพจ Facebook', 'กลุ่มหางานใน Facebook', 'Fastwork', 'IG', 'เพื่อนแนะนำ', 'อื่นๆ'];
             const sourceStats = sources.map(src => {
                 const count = candidates.filter(c => (c.source || 'เพจ Facebook') === src).length;
@@ -749,7 +508,6 @@
 
             return (
                 <div className="space-y-6">
-                    {/* Top Executive Stats */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <StatCard title="ตำแหน่งที่เปิดรับ (Jobs)" value={jobs.filter(j => j.status === 'Open').length} icon="briefcase" subtitle="ตำแหน่งที่เปิดรับสมัครอยู่" color="text-blue-600" />
                         <StatCard title="ผู้สมัครในระบบทั้งหมด" value={candidates.length} icon="users" subtitle={`อยู่ในระยะทดลองงาน: ${probationStaff.length} คน`} color="text-lnc-pink" />
@@ -757,14 +515,11 @@
                         <StatCard title="แผนพัฒนาค้างติดตาม" value={developments.filter(d => d.status !== 'Completed').length} icon="alert-circle" subtitle="Coaching / Shadowing" color="text-amber-500" />
                     </div>
 
-                    {/* Application Sources Breakdown & Conversion Quality Analysis */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-sm space-y-4 lg:col-span-2">
-                            <div className="flex items-center justify-between border-b pb-3">
-                                <div>
-                                    <h3 className="font-extrabold text-zinc-900 text-sm">📊 สถิติจำแนกตามช่องทางรับสมัครงาน (Application Source Analytics)</h3>
-                                    <p className="text-xs text-zinc-500">วิเคราะห์ว่าผู้สมัครมาจากไหน และช่องทางไหนแปลงเป็นพนักงานที่ผ่านสัมภาษณ์/ทดลองงานได้ดีที่สุด</p>
-                                </div>
+                            <div>
+                                <h3 className="font-extrabold text-zinc-900 text-sm">📊 สถิติจำแนกตามช่องทางรับสมัครงาน (Application Source Analytics)</h3>
+                                <p className="text-xs text-zinc-500">แสดงจำนวนผู้สมัคร และวัดผลคุณภาพว่าผู้สมัครจากช่องทางไหนผ่านสัมภาษณ์/ทดลองงานมากที่สุด</p>
                             </div>
 
                             <div className="space-y-3">
@@ -792,7 +547,6 @@
                             </div>
                         </div>
 
-                        {/* Recent Applicants Quick Inspector */}
                         <div className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-sm space-y-3">
                             <h3 className="font-extrabold text-zinc-900 text-sm border-b pb-2">ผู้สมัครล่าสุด (Recent Applicants)</h3>
                             <div className="space-y-2.5 overflow-y-auto max-h-[260px] custom-scrollbar pr-1">
@@ -814,43 +568,10 @@
                             </div>
                         </div>
                     </div>
-
-                    {/* Probation Tracker Section */}
-                    <div className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-sm space-y-3">
-                        <div className="flex items-center justify-between border-b border-zinc-100 pb-2">
-                            <h3 className="font-bold text-zinc-900 text-xs uppercase tracking-wide">⏳ ติดตามพนักงานช่วงทดลองงาน (Probation Tracker 90 Days)</h3>
-                            <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 font-bold px-2 py-0.5 rounded-full">
-                                {probationStaff.length} คนอยู่ในระยะทดลองงาน
-                            </span>
-                        </div>
-
-                        {probationStaff.length === 0 ? (
-                            <p className="text-xs text-zinc-400 py-6 text-center">ไม่มีพนักงานในระยะทดลองงานขณะนี้</p>
-                        ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                {probationStaff.map(st => (
-                                    <div key={st.id} className="p-3.5 bg-zinc-50 rounded-xl border border-zinc-200 flex flex-col justify-between space-y-2">
-                                        <div>
-                                            <div className="flex justify-between items-start">
-                                                <span className="font-bold text-xs text-zinc-900">{st.full_name} ({st.nickname})</span>
-                                                <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">เหลือ {st.probationDaysLeft || 45} วัน</span>
-                                            </div>
-                                            <p className="text-xs text-zinc-500 mt-0.5">{st.job_title}</p>
-                                        </div>
-                                        <div className="pt-2 border-t border-zinc-200 flex justify-between items-center">
-                                            <span className="text-[10px] text-zinc-500">ที่มา: {st.source || '-'}</span>
-                                            <button onClick={() => setSelectedCandidateDetail(st)} className="text-xs font-bold text-lnc-pink hover:underline">ประเมินบรรจุงาน &rarr;</button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
                 </div>
             );
         }
 
-        /* STREAMING_CHUNK:Defining Recruitment ATS Board with Strict Workflow... */
         function RecruitmentView({ candidates, setSelectedCandidateDetail, onOpenStageAction }) {
             return (
                 <div className="space-y-6">
@@ -858,7 +579,7 @@
                         <div>
                             <span className="text-[10px] font-bold uppercase bg-lnc-pink text-white px-2 py-0.5 rounded tracking-wider">LNC Strict ATS Pipeline</span>
                             <h3 className="text-lg font-bold mt-1">บอร์ดคัดเลือกติวเตอร์ & บุคลากร (Recruitment Workflow)</h3>
-                            <p className="text-xs text-zinc-400">ผู้สมัครจะย้ายขั้นตอนแบบมีลำดับ และต้องผ่านการประเมินในแต่ละ Stage อย่างถูกต้อง</p>
+                            <p className="text-xs text-zinc-400">เมื่อผู้สมัครส่งใบสมัครเข้ามาจากหน้าลงทะเบียน รายชื่อจะปรากฏในช่อง "1. รับใบสมัคร" อัตโนมัติ</p>
                         </div>
                         <div className="text-right">
                             <span className="text-3xl font-black text-white">{candidates.length}</span>
@@ -866,7 +587,6 @@
                         </div>
                     </div>
 
-                    {/* Strict Pipeline Board Columns */}
                     <div className="grid grid-cols-1 md:grid-cols-7 gap-3 overflow-x-auto pb-4 custom-scrollbar">
                         {ATS_STAGES.filter(s => s.stepOrder <= 7).map(stage => {
                             const stageCandidates = candidates.filter(c => c.stage === stage.id);
@@ -918,8 +638,8 @@
             );
         }
 
-        /* STREAMING_CHUNK:Defining Employee Directory and Quality Development View... */
-        function DevelopmentView({ employees, developments, setActiveDevModal }) {
+        /* STREAMING_CHUNK:Defining Employee Directory and Skill Matrix View... */
+        function DevelopmentView({ employees, developments }) {
             const [selectedEmp, setSelectedEmp] = React.useState(employees[0] || null);
 
             return (
@@ -928,7 +648,6 @@
                         <div>
                             <span className="text-[10px] font-bold uppercase bg-lnc-pink text-white px-2 py-0.5 rounded tracking-wider">Quality & Capability Matrix</span>
                             <h3 className="text-lg font-bold mt-1">คลังระบบพนักงานประจำ & ติดตามคุณภาพบุคลากร LNC Plus</h3>
-                            <p className="text-xs text-zinc-400">พนักงานที่ผ่านการบรรจุจากช่วงทดลองงานจะมีรหัสพนักงานประจำตัว (Employee Code) บันทึกอยู่ที่นี่</p>
                         </div>
                         <div className="text-right">
                             <span className="text-3xl font-black text-white">{employees.length}</span>
@@ -937,7 +656,6 @@
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* Employee Directory List */}
                         <div className="bg-white rounded-2xl border border-zinc-200 p-4 shadow-sm space-y-3">
                             <h4 className="font-bold text-xs uppercase text-zinc-500 tracking-wider">รายชื่อบุคลากร / รหัสพนักงาน</h4>
                             <div className="space-y-2">
@@ -959,16 +677,11 @@
                                         </div>
                                         <h5 className="font-bold text-xs text-zinc-900 mt-1.5">{emp.name}</h5>
                                         <p className="text-[11px] text-zinc-500 mt-0.5">{emp.role}</p>
-                                        <div className="mt-2 pt-1.5 border-t border-zinc-100 flex justify-between text-[10px] text-zinc-400">
-                                            <span>เริ่มงาน: {emp.startDate || '2026-01-01'}</span>
-                                            <span>ที่มา: {emp.source || 'เพจ Facebook'}</span>
-                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Selected Employee Competency Profile */}
                         {selectedEmp && (
                             <div className="bg-white rounded-2xl border border-zinc-200 p-6 shadow-sm lg:col-span-2 space-y-5">
                                 <div className="flex items-center justify-between border-b pb-4">
@@ -982,16 +695,8 @@
                                         <h4 className="font-black text-lg text-zinc-900 mt-1">{selectedEmp.name}</h4>
                                         <p className="text-xs text-zinc-500">{selectedEmp.role}</p>
                                     </div>
-                                    <button 
-                                        onClick={() => setActiveDevModal(selectedEmp)}
-                                        className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center space-x-1.5 transition shadow-sm"
-                                    >
-                                        <i data-lucide="plus" className="w-4 h-4"></i>
-                                        <span>สร้างแผนพัฒนา (Action Plan)</span>
-                                    </button>
                                 </div>
 
-                                {/* Skills Competency Bars */}
                                 <div className="space-y-4">
                                     <h5 className="text-xs font-bold uppercase text-zinc-500 tracking-wider">Skill Competency Matrix vs Target (1-5)</h5>
                                     {selectedEmp.skills.map(sk => {
@@ -1018,7 +723,6 @@
             );
         }
 
-        /* STREAMING_CHUNK:Defining Training Hub View... */
         function TrainingView({ trainings }) {
             return (
                 <div className="space-y-6">
@@ -1051,11 +755,12 @@
             );
         }
 
-        /* STREAMING_CHUNK:Main Application Shell and State Management... */
+        /* STREAMING_CHUNK:Main Shell Component with Real-time Fetch from Supabase... */
         function App() {
             const [currentTab, setCurrentTab] = React.useState('dashboard');
             const [selectedBranch, setSelectedBranch] = React.useState('ALL');
             const [isDbConnected, setIsDbConnected] = React.useState(false);
+            const [isFetching, setIsFetching] = React.useState(false);
 
             const [candidates, setCandidates] = React.useState(INITIAL_CANDIDATES);
             const [employees, setEmployees] = React.useState(INITIAL_EMPLOYEES);
@@ -1066,28 +771,33 @@
             const [selectedCandidateDetail, setSelectedCandidateDetail] = React.useState(null);
             const [activeStageActionModal, setActiveStageActionModal] = React.useState(null);
             const [deletingCandidateId, setDeletingCandidateId] = React.useState(null);
-            const [activeDevModal, setActiveDevModal] = React.useState(null);
-            const [activeJobModal, setActiveJobModal] = React.useState(false);
 
             const [toast, setToast] = React.useState(null);
 
             const showToast = (msg) => {
                 setToast(msg);
-                setTimeout(() => setToast(null), 3000);
+                setTimeout(() => setToast(null), 3500);
             };
 
             const fetchFromSupabase = React.useCallback(async () => {
                 if (!SUPABASE_URL || !SUPABASE_KEY || !window.supabase) return;
+                setIsFetching(true);
                 try {
                     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                    const { data: candData, error: candErr } = await supabase.from('candidates').select('*').order('created_at', { ascending: false });
+                    const { data: candData, error: candErr } = await supabase
+                        .from('candidates')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
                     if (!candErr && candData && candData.length > 0) {
                         setCandidates(candData);
                         setIsDbConnected(true);
+                        showToast(`⚡ ซิงก์ข้อมูลดึงผู้สมัครล่าสุดเรียบร้อย (${candData.length} รายการ)`);
                     }
                 } catch (err) {
                     console.error('Supabase fetch error:', err);
                 }
+                setIsFetching(false);
             }, []);
 
             React.useEffect(() => {
@@ -1100,7 +810,7 @@
                 }
             });
 
-            // Auto-Generate Employee ID and Convert Candidate to Official Employee
+            // Convert Passed Candidate into Employee Profile with Employee ID
             const handleConvertToEmployee = (cand) => {
                 const nextEmpNumber = employees.length + 1;
                 const generatedCode = `LNC-EMP-${String(nextEmpNumber).padStart(3, '0')}`;
@@ -1126,8 +836,6 @@
                 };
 
                 setEmployees([newEmp, ...employees]);
-                
-                // Update Candidate Status
                 setCandidates(candidates.map(c => c.id === cand.id ? { ...c, stage: 'Passed Probation' } : c));
                 setSelectedCandidateDetail(null);
                 setCurrentTab('development');
@@ -1251,9 +959,13 @@
                             </div>
 
                             <div className="flex items-center space-x-2">
-                                <button onClick={() => setActiveJobModal(true)} className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-semibold px-3.5 py-2 rounded-xl flex items-center space-x-1 transition shadow-sm">
-                                    <i data-lucide="plus" className="w-4 h-4"></i>
-                                    <span>เปิดตำแหน่งงานใหม่</span>
+                                <button
+                                    onClick={fetchFromSupabase}
+                                    disabled={isFetching}
+                                    className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-semibold px-3 py-2 rounded-xl border border-zinc-300 flex items-center space-x-1.5 transition shadow-xs"
+                                >
+                                    <i data-lucide="refresh-cw" className={`w-3.5 h-3.5 text-lnc-pink ${isFetching ? 'animate-spin' : ''}`}></i>
+                                    <span>{isFetching ? 'กำลังดึงข้อมูล...' : '🔄 ดึงข้อมูลผู้สมัครล่าสุด'}</span>
                                 </button>
                             </div>
                         </header>
@@ -1282,7 +994,6 @@
                                 <DevelopmentView 
                                     employees={employees.filter(filterByBranch)}
                                     developments={developments}
-                                    setActiveDevModal={setActiveDevModal}
                                 />
                             )}
 
@@ -1324,28 +1035,6 @@
                             candidateId={deletingCandidateId}
                             onClose={() => setDeletingCandidateId(null)}
                             onConfirm={handleDeleteCandidate}
-                        />
-                    )}
-                    {activeDevModal && (
-                        <CreateDevPlanModal 
-                            employee={activeDevModal} 
-                            onClose={() => setActiveDevModal(null)} 
-                            onSave={(newPlan) => { 
-                                setDevelopments([newPlan, ...developments]); 
-                                setActiveDevModal(null); 
-                                showToast('สร้างแผนพัฒนาเรียบร้อยแล้ว'); 
-                            }} 
-                        />
-                    )}
-                    {activeJobModal && (
-                        <CreateJobModal 
-                            branches={INITIAL_BRANCHES} 
-                            onClose={() => setActiveJobModal(false)} 
-                            onSave={(newJob) => { 
-                                setJobs([newJob, ...jobs]); 
-                                setActiveJobModal(false); 
-                                showToast('เปิดประกาศรับสมัครงานเรียบร้อยแล้ว'); 
-                            }} 
                         />
                     )}
                 </div>
