@@ -44,7 +44,7 @@
         // ------------------------------------------------------------------------
         // 🔑 นำ Web App URL ของคุณมาวางแทนที่ข้อความด้านล่างนี้ให้ถูกต้อง
         // ------------------------------------------------------------------------
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwRoa93ZS00tDvZRHpdA-iNaLuVbzx2i0VdxzH94zuC4zKb4K-zoagW5YHVAShAV1afwg/exec";
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxBiizVZbgEgKth6hLtqxIciAhVto_9N0an1FD0quHLyQ80SWEdjJT4yVyw6wJVWgEw0g/exec";
         // ------------------------------------------------------------------------
 
         const ATS_STAGES = [
@@ -59,7 +59,6 @@
             { id: 'Rejected', title: 'ไม่ผ่านการคัดเลือก', badgeColor: 'bg-rose-50 text-rose-700' }
         ];
 
-        // Helper to get the formal next stage in sequential pipeline
         function getNextStageId(currentStageId) {
             const sequence = ['Application', 'Screening', 'Interview', 'Demo Teaching', 'Offer', 'Probation', 'Passed Probation'];
             const idx = sequence.indexOf(currentStageId);
@@ -185,6 +184,7 @@
 
             const nextStageId = getNextStageId(candidate.stage);
             const nextStageObj = ATS_STAGES.find(s => s.id === nextStageId);
+            const hasEmpCode = candidate.evals && candidate.evals.empCode;
 
             return (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
@@ -199,6 +199,11 @@
                                     <span className="text-[10px] bg-zinc-800 text-zinc-300 font-bold px-2.5 py-1 rounded-lg border border-zinc-700">
                                         ID: {candidate.id}
                                     </span>
+                                    {hasEmpCode && (
+                                        <span className="text-[10px] bg-emerald-500 text-white font-mono font-bold px-2.5 py-1 rounded-lg shadow-xs">
+                                            รหัสพนักงาน: {candidate.evals.empCode}
+                                        </span>
+                                    )}
                                     <span className="text-[10px] bg-emerald-950 text-emerald-300 font-bold px-2.5 py-1 rounded-lg border border-emerald-800">
                                         สมัครวันที่: {candidate.created_at || 'สดจากชีท'}
                                     </span>
@@ -343,15 +348,15 @@
                                 {(candidate.stage === 'Passed Probation' || candidate.stage === 'Probation') && (
                                     <button 
                                         onClick={() => onConvertToEmployee(candidate)}
-                                        disabled={isConverted}
+                                        disabled={isConverted || hasEmpCode}
                                         className={`text-xs font-bold px-5 py-2.5 rounded-xl transition shadow-md flex items-center space-x-1.5 ${
-                                            isConverted 
+                                            (isConverted || hasEmpCode)
                                                 ? 'bg-zinc-300 text-zinc-500 cursor-not-allowed' 
                                                 : 'bg-emerald-600 hover:bg-emerald-700 text-white'
                                         }`}
                                     >
                                         <Icon name="user-check" className="w-4 h-4" />
-                                        <span>{isConverted ? '✓ บรรจุแล้ว (พนักงานประจำ)' : '🎉 บรรจุพนักงานประจำ (ออกรหัส 10 หลัก)'}</span>
+                                        <span>{(isConverted || hasEmpCode) ? `✓ บรรจุแล้ว [รหัส: ${hasEmpCode || 'ประจำ'}]` : '🎉 บรรจุพนักงานประจำ (ออกรหัส 10 หลัก)'}</span>
                                     </button>
                                 )}
                             </div>
@@ -364,7 +369,6 @@
         function App() {
             const [currentTab, setCurrentTab] = React.useState('dashboard');
             const [candidates, setCandidates] = React.useState([]);
-            const [employees, setEmployees] = React.useState([]);
             const [trainings, setTrainings] = React.useState([]);
             const [jobQuotas, setJobQuotas] = React.useState([]);
 
@@ -431,6 +435,22 @@
                 fetchGASData();
             }, []);
 
+            const employees = React.useMemo(() => {
+                if (!Array.isArray(candidates)) return [];
+                return candidates
+                    .filter(c => c && (c.stage === 'Passed Probation' || (c.evals && c.evals.empCode)))
+                    .map(c => ({
+                        id: c.id,
+                        empCode: (c.evals && c.evals.empCode) ? c.evals.empCode : '84910' + String(c.id).replace(/\D/g, '').slice(-5),
+                        name: `${c.full_name} (${c.nickname || 'ติวเตอร์'})`,
+                        role: c.job_title,
+                        dept: 'Academic/Tutor',
+                        branchName: c.branch_preference || 'Happitat บางนา',
+                        status: 'Passed Probation',
+                        source: c.source || 'Facebook'
+                    }));
+            }, [candidates]);
+
             const handleSaveQuotas = async (updatedQuotas) => {
                 setJobQuotas(updatedQuotas);
                 if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) {
@@ -484,20 +504,32 @@
                 });
             }, [candidates, startDateFilter, endDateFilter]);
 
-            // Quick/Formal move candidate stage
-            const handleQuickMoveStage = async (candId, newStage) => {
-                setCandidates(candidates.map(c => c.id === candId ? { ...c, stage: newStage } : c));
+            const handleQuickMoveStage = async (candId, newStage, empCodeToSave = null) => {
+                setCandidates(candidates.map(c => {
+                    if (c.id === candId) {
+                        const updatedEvals = empCodeToSave ? { ...(c.evals || {}), empCode: empCodeToSave } : c.evals;
+                        return { ...c, stage: newStage, evals: updatedEvals };
+                    }
+                    return c;
+                }));
+
                 if (selectedCandidateDetail && selectedCandidateDetail.id === candId) {
-                    setSelectedCandidateDetail({ ...selectedCandidateDetail, stage: newStage });
+                    const updatedEvals = empCodeToSave ? { ...(selectedCandidateDetail.evals || {}), empCode: empCodeToSave } : selectedCandidateDetail.evals;
+                    setSelectedCandidateDetail({ ...selectedCandidateDetail, stage: newStage, evals: updatedEvals });
                 }
+
                 const stageTitle = ATS_STAGES.find(s => s.id === newStage)?.title || newStage;
                 showToast(`อนุมัติย้ายผู้สมัครไปยังขั้นตอน "${stageTitle}" เรียบร้อยแล้ว`);
 
                 if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) {
                     try {
+                        const payload = { action: 'update_stage', id: candId, stage: newStage };
+                        if (empCodeToSave) {
+                            payload.empCode = empCodeToSave;
+                        }
                         await fetch(GAS_WEB_APP_URL, {
                             method: 'POST',
-                            body: JSON.stringify({ action: 'update_stage', id: candId, stage: newStage })
+                            body: JSON.stringify(payload)
                         });
                     } catch (err) {
                         console.error('GAS update error:', err);
@@ -506,27 +538,16 @@
             };
 
             const handleConvertToEmployee = (cand) => {
-                const alreadyExists = employees.some(e => e.name.includes(cand.full_name));
-                if (alreadyExists) {
-                    showToast(`⚠️ พนักงานคุณ ${cand.full_name} ถูกบรรจุเข้าสู่ระบบพนักงานประจำไปแล้วเรียบร้อยครับ`);
+                const hasEmpCode = cand.evals && cand.evals.empCode;
+                if (hasEmpCode || cand.stage === 'Passed Probation') {
+                    showToast(`⚠️ คุณ ${cand.full_name} ได้รับการบรรจุเรียบร้อยแล้ว`);
                     return;
                 }
 
                 const random10Digit = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-                const newEmp = {
-                    id: 'e_' + Date.now(),
-                    empCode: random10Digit,
-                    name: `${cand.full_name} (${cand.nickname || 'ติวเตอร์'})`,
-                    role: cand.job_title,
-                    dept: 'Academic/Tutor',
-                    branchName: cand.branch_preference || 'Happitat บางนา',
-                    status: 'Passed Probation',
-                    source: cand.source || 'Facebook'
-                };
-                setEmployees([newEmp, ...employees]);
-                handleQuickMoveStage(cand.id, 'Passed Probation');
+                handleQuickMoveStage(cand.id, 'Passed Probation', random10Digit);
                 setSelectedCandidateDetail(null);
-                showToast(`🎉 บรรจุคุณ ${cand.full_name} เป็นพนักงานประจำสำเร็จ! รหัสพนักงาน 10 หลัก: [${random10Digit}]`);
+                showToast(`🎉 บรรจุคุณ ${cand.full_name} เป็นพนักงานประจำสำเร็จ! รหัสพนักงาน 10 หลัก: [${random10Digit}] (บันทึกลงชีทแล้ว)`);
             };
 
             const handleDeleteCandidate = async (candId) => {
@@ -597,7 +618,7 @@
                             </nav>
                         </div>
                         <div className="p-4 border-t border-zinc-800 text-[10px] text-zinc-400">
-                            Google Sheets Live Connected
+                            Google Sheets Live Sync Connected
                         </div>
                     </aside>
 
@@ -607,7 +628,7 @@
                             <h2 className="text-base font-bold text-zinc-900">
                                 {currentTab === 'dashboard' && 'HR Executive Dashboard & Position Headcount Capacity Tracking'}
                                 {currentTab === 'ats' && 'Recruitment ATS Pipeline (ระบบคัดเลือกผู้สมัครเป็นทางการ)'}
-                                {currentTab === 'employees' && 'คลังข้อมูลพนักงานประจำ (ออกรหัส 10 หลักอัตโนมัติ)'}
+                                {currentTab === 'employees' && 'คลังข้อมูลพนักงานประจำ (ซิงก์รหัส 10 หลักจาก Google Sheets)'}
                                 {currentTab === 'training' && 'ระบบติดตามการฝึกอบรมพนักงาน (Probation & Official Staff)'}
                                 {currentTab === 'settings' && 'การตั้งค่าเป้าหมายและโควตาอัตรากำลังคน (Position Quota Settings)'}
                             </h2>
@@ -618,6 +639,7 @@
                         </header>
 
                         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-8">
+                            {/* Dashboard Tab */}
                             {currentTab === 'dashboard' && (
                                 <div className="space-y-6">
                                     {/* Date Range Filter Bar */}
@@ -647,7 +669,7 @@
                                     <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
                                         <div className="flex justify-between items-center">
                                             <div>
-                                                <h3 className="font-extrabold text-sm text-zinc-900">📈 อัตรากำลังคน & อัตราตำแหน่งที่เปิดรับ (Position Headcount & Capacity Tracking)</h3>
+                                                <h3 className="font-extrabold text-sm text-zinc-900">📈 อัตรากำลังคน & อัตราตำแหน่งที่เปิดรับ (Real-time Position Capacity Tracking)</h3>
                                                 <p className="text-[11px] text-zinc-500 mt-0.5">นับรวมผู้สมัครที่อยู่ในสถานะ "ทดลองงาน (Probation)" และ "ผ่านการบรรจุ (Passed)" เข้าโควตาทันที</p>
                                             </div>
                                             <button onClick={() => setCurrentTab('settings')} className="text-xs text-lnc-pink font-bold hover:underline">⚙️ ปรับแต่งตั้งค่าโควตา</button>
@@ -677,7 +699,6 @@
                                                     }).length;
 
                                                     const totalFilled = probationCount + passedCount;
-                                                    const pct = Math.round((totalFilled / targetQuotaNum) * 100);
                                                     const remaining = Math.max(0, targetQuotaNum - totalFilled);
 
                                                     return (
@@ -738,7 +759,7 @@
                                     <div className="bg-zinc-900 text-white p-6 rounded-3xl shadow-sm flex items-center justify-between">
                                         <div>
                                             <h3 className="font-bold text-sm">บอร์ดคัดเลือกผู้สมัคร (ATS Pipeline - ระบบพิจารณาทางการ)</h3>
-                                            <p className="text-xs text-zinc-400 mt-1">กดอนุมัติเลื่อนขั้นผู้สมัครเป็นทางการ หรือเปลี่ยนขั้นตอนได้อย่างยืดหยุ่น</p>
+                                            <p className="text-xs text-zinc-400 mt-1">กดอนุมัติเลื่อนขั้นผู้สมัครเป็นทางการ หรือเปลี่ยนขั้นตอนได้อย่างยืดหยุ่น (บันทึกลงชีทอัตโนมัติ)</p>
                                         </div>
                                     </div>
 
@@ -761,46 +782,54 @@
                                                         </div>
 
                                                         <div className="space-y-2.5 flex-1 overflow-y-auto custom-scrollbar pr-1">
-                                                            {stageCandidates.map(c => (
-                                                                <div key={c.id} className="bg-white p-3.5 rounded-2xl border border-zinc-200 shadow-xs space-y-2.5 hover:shadow-md transition">
-                                                                    <div className="flex justify-between text-[9px]">
-                                                                        <span className="font-bold text-lnc-pink bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-100">{c.source || 'Facebook'}</span>
-                                                                        <span className="text-zinc-400">{c.created_at || 'ล่าสุด'}</span>
-                                                                    </div>
-                                                                    <div>
-                                                                        <h5 className="font-bold text-xs text-zinc-900">{c.full_name} {c.nickname ? `(${c.nickname})` : ''}</h5>
-                                                                        <p className="text-[10px] text-zinc-500 line-clamp-1 mt-0.5">{c.job_title}</p>
-                                                                    </div>
-
-                                                                    {/* Formal Action Buttons */}
-                                                                    <div className="pt-1 flex flex-col space-y-1.5">
-                                                                        {nextStageObj && (
-                                                                            <button 
-                                                                                onClick={() => handleQuickMoveStage(c.id, nextStageObj.id)}
-                                                                                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold py-1.5 rounded-lg transition flex items-center justify-center space-x-1 shadow-2xs"
-                                                                            >
-                                                                                <span>อนุมัติ ➔ {nextStageObj.title.split('.')[1] || nextStageObj.title}</span>
-                                                                            </button>
-                                                                        )}
-
-                                                                        <div className="grid grid-cols-2 gap-1">
-                                                                            <select 
-                                                                                value={c.stage} 
-                                                                                onChange={(e) => handleQuickMoveStage(c.id, e.target.value)}
-                                                                                className="text-[9px] border rounded-lg p-1 font-bold bg-zinc-50 text-zinc-800 focus:outline-none col-span-2"
-                                                                            >
-                                                                                {ATS_STAGES.map(s => (
-                                                                                    <option key={s.id} value={s.id}>{s.title}</option>
-                                                                                ))}
-                                                                            </select>
+                                                            {stageCandidates.map(c => {
+                                                                const hasEmpCode = c.evals && c.evals.empCode;
+                                                                return (
+                                                                    <div key={c.id} className="bg-white p-3.5 rounded-2xl border border-zinc-200 shadow-xs space-y-2.5 hover:shadow-md transition">
+                                                                        <div className="flex justify-between items-center text-[9px]">
+                                                                            <span className="font-bold text-lnc-pink bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-100">{c.source || 'Facebook'}</span>
+                                                                            <span className="text-zinc-400">{c.created_at || 'ล่าสุด'}</span>
+                                                                        </div>
+                                                                        <div>
+                                                                            <h5 className="font-bold text-xs text-zinc-900">{c.full_name} {c.nickname ? `(${c.nickname})` : ''}</h5>
+                                                                            <p className="text-[10px] text-zinc-500 line-clamp-1 mt-0.5">{c.job_title}</p>
+                                                                            {hasEmpCode && (
+                                                                                <span className="text-[9px] text-emerald-700 bg-emerald-50 border border-emerald-200 font-mono font-bold px-1.5 py-0.5 rounded mt-1 inline-block">
+                                                                                    ID: {hasEmpCode}
+                                                                                </span>
+                                                                            )}
                                                                         </div>
 
-                                                                        <button onClick={() => setSelectedCandidateDetail(c)} className="w-full bg-zinc-900 hover:bg-black text-white text-[10px] py-1.5 rounded-lg font-bold transition">
-                                                                            ดูประวัติเต็ม ➔
-                                                                        </button>
+                                                                        {/* Formal Action Buttons */}
+                                                                        <div className="pt-1 flex flex-col space-y-1.5">
+                                                                            {nextStageObj && (
+                                                                                <button 
+                                                                                    onClick={() => handleQuickMoveStage(c.id, nextStageObj.id)}
+                                                                                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold py-1.5 rounded-lg transition flex items-center justify-center space-x-1 shadow-2xs"
+                                                                                >
+                                                                                    <span>อนุมัติ ➔ {nextStageObj.title.split('.')[1] || nextStageObj.title}</span>
+                                                                                </button>
+                                                                            )}
+
+                                                                            <div className="grid grid-cols-2 gap-1">
+                                                                                <select 
+                                                                                    value={c.stage} 
+                                                                                    onChange={(e) => handleQuickMoveStage(c.id, e.target.value)}
+                                                                                    className="text-[9px] border rounded-lg p-1 font-bold bg-zinc-50 text-zinc-800 focus:outline-none col-span-2"
+                                                                                >
+                                                                                    {ATS_STAGES.map(s => (
+                                                                                        <option key={s.id} value={s.id}>{s.title}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </div>
+
+                                                                            <button onClick={() => setSelectedCandidateDetail(c)} className="w-full bg-zinc-900 hover:bg-black text-white text-[10px] py-1.5 rounded-lg font-bold transition">
+                                                                                ดูประวัติเต็ม ➔
+                                                                            </button>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            ))}
+                                                                );
+                                                            })}
                                                         </div>
                                                     </div>
                                                 );
@@ -816,7 +845,7 @@
                                     <div className="bg-zinc-900 text-white p-6 rounded-3xl flex justify-between items-center shadow-sm">
                                         <div>
                                             <h3 className="font-bold text-sm">คลังพนักงานประจำ (Official Employee Directory & 10-Digit ID)</h3>
-                                            <p className="text-xs text-zinc-400 mt-1">พนักงานที่ผ่านการบรรจุจะมีรหัสประจำตัว 10 หลักอัตโนมัติ</p>
+                                            <p className="text-xs text-zinc-400 mt-1">พนักงานที่ผ่านการบรรจุจะมีรหัสประจำตัว 10 หลักซิงก์จาก Google Sheets อัตโนมัติ</p>
                                         </div>
                                     </div>
                                     <div className="bg-white rounded-3xl border border-zinc-200 overflow-hidden shadow-sm">
@@ -994,7 +1023,7 @@
                             onQuickMove={handleQuickMoveStage}
                             onConvertToEmployee={handleConvertToEmployee}
                             onDeleteClick={handleDeleteCandidate}
-                            isConverted={employees.some(e => e.name.includes(selectedCandidateDetail.full_name))}
+                            isConverted={employees.some(e => e.id === selectedCandidateDetail.id || (e.empCode && selectedCandidateDetail.evals && selectedCandidateDetail.evals.empCode))}
                         />
                     )}
 
