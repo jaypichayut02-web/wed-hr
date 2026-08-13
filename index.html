@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNC Plus - Internal HR Management System</title>
+
+    <!-- Tailwind CSS -->
+    <script data-cfasync="false" src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons UMD -->
+    <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+    <!-- React & ReactDOM 18 UMD -->
+    <script data-cfasync="false" src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script data-cfasync="false" src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel Standalone -->
+    <script data-cfasync="false" src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
+    <!-- Supabase JS Client UMD -->
+    <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+    <script data-cfasync="false">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lnc: {
+                            pink: '#E60067',      /* LNC Magenta Pink */
+                            pinklight: '#FFF0F5',
+                            dark: '#18181B',      /* Dark Navy / Zinc 900 */
+                            gray: '#71717A',
+                            bg: '#FAFAFA'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #FAFAFA; color: #18181B; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script data-cfasync="false" type="text/babel" data-presets="react" data-type="module">
+        /* STREAMING_CHUNK:Defining Mock Data and Initial Constants... */
+        const INITIAL_BRANCHES = [
+            { id: 'b1', name: 'Happitat บางนา (ชั้น 5)' },
+            { id: 'b2', name: 'เดอะไบรท์ พระราม 2' },
+            { id: 'b3', name: 'ข้างเซ็นทรัล พระราม 2' },
+            { id: 'b4', name: 'แลนมาร์ค มหาชัย' },
+            { id: 'b5', name: 'The Walk ราชพฤกษ์ นนทบุรี' },
+            { id: 'b6', name: 'Meta Mall เชียงใหม่' },
+            { id: 'b7', name: 'EZY Learn (ออนไลน์)' }
+        ];
+
+        const INITIAL_JOBS = [
+            { id: 'j1', title: 'คุณครูประจำ - คณิตศาสตร์ (ม.1-ม.6)', dept: 'Academic/Tutor', branchId: 'b1', type: 'Full-Time', status: 'Open' },
+            { id: 'j2', title: 'ติวเตอร์ (พาร์ทไทม์) - ฟิสิกส์ A-Level', dept: 'Academic/Tutor', branchId: 'b2', type: 'Part-Time', status: 'Open' },
+            { id: 'j3', title: 'Operation Admin สาขาเดอะไบรท์ พระราม 2', dept: 'Branch Staff', branchId: 'b2', type: 'Full-Time', status: 'Open' },
+            { id: 'j4', title: 'CS (Customer Service & Student Care)', dept: 'Branch Staff', branchId: 'b3', type: 'Full-Time', status: 'Open' }
+        ];
+
+        const INITIAL_CANDIDATES = [
+            {
+                id: 'c1',
+                name: 'ดร. ภานุวัฒน์ วิเศษสุข',
+                nickname: 'ครูบาส',
+                jobTitle: 'คุณครูประจำ - คณิตศาสตร์ (ม.1-ม.6)',
+                type: 'Tutor',
+                stage: 'Demo Teaching',
+                branchId: 'b1',
+                phone: '081-234-5678',
+                email: 'panuwat.m@gmail.com',
+                education: 'ปริญญาเอก',
+                expectedSalary: '35,000 - 45,000 บาท',
+                source: 'เพจ Facebook',
+                score: { knowledge: 5, delivery: 4, classroom: 4, comm: 5, engagement: 4 }
+            },
+            {
+                id: 'c2',
+                name: 'นางสาว ณิชาภัทร วงศ์สว่าง',
+                nickname: 'ณิชา',
+                jobTitle: 'ติวเตอร์ (พาร์ทไทม์) - ฟิสิกส์ A-Level',
+                type: 'Tutor',
+                stage: 'Interview',
+                branchId: 'b2',
+                phone: '089-876-5432',
+                email: 'nichapat.p@gmail.com',
+                education: 'ปริญญาตรี',
+                expectedSalary: '500 บาท/ชม.',
+                source: 'Fastwork',
+                score: null
+            },
+            {
+                id: 'c3',
+                name: 'นาย ธนกฤต ชัยเจริญ',
+                nickname: 'กฤต',
+                jobTitle: 'Operation Admin สาขาเดอะไบรท์ พระราม 2',
+                type: 'Support',
+                stage: 'Probation',
+                probationDaysLeft: 42,
+                branchId: 'b2',
+                phone: '086-111-2233',
+                email: 'tanakrit.c@gmail.com',
+                education: 'ปริญญาตรี',
+                expectedSalary: '22,000 บาท',
+                source: 'กลุ่มหางานใน Facebook',
+                score: null
+            }
+        ];
+
+        const INITIAL_EMPLOYEES = [
+            {
+                id: 'e1',
+                name: 'ครูพี่เบสท์ (ชยุตม์)',
+                role: 'Senior Tutor - Physics',
+                dept: 'Academic/Tutor',
+                branchId: 'b1',
+                type: 'Full-Time',
+                skills: [
+                    { name: 'Subject Knowledge', score: 5, target: 5 },
+                    { name: 'Teaching Technique', score: 4, target: 5 },
+                    { name: 'Classroom Management', score: 3, target: 4 },
+                    { name: 'Communication', score: 5, target: 5 },
+                    { name: 'Student Engagement', score: 3, target: 5 }
+                ]
+            },
+            {
+                id: 'e2',
+                name: 'ครูพลอย (ชลธิชา)',
+                role: 'Tutor - Chemistry',
+                dept: 'Academic/Tutor',
+                branchId: 'b2',
+                type: 'Part-Time',
+                skills: [
+                    { name: 'Subject Knowledge', score: 5, target: 5 },
+                    { name: 'Teaching Technique', score: 3, target: 4 },
+                    { name: 'Classroom Management', score: 2, target: 4 },
+                    { name: 'Communication', score: 4, target: 4 },
+                    { name: 'Student Engagement', score: 3, target: 4 }
+                ]
+            }
+        ];
+
+        const INITIAL_DEVELOPMENTS = [
+            {
+                id: 'd1',
+                empId: 'e1',
+                empName: 'ครูพี่เบสท์ (ชยุตม์)',
+                type: 'Shadowing',
+                title: 'Shadowing คลาสเรียนเรื่องการกระตุ้น Engagement เด็กหลังห้อง',
+                skillGap: 'Student Engagement (3/5)',
+                mentor: 'ครูพี่เอก (Academic Head)',
+                targetDate: '2026-09-15',
+                status: 'In Progress'
+            }
+        ];
+
+        const INITIAL_TRAININGS = [
+            {
+                id: 't1',
+                title: 'Workshop: การผลิตสื่อ Active Learning สำหรับติวเตอร์ยุค AI',
+                date: '2026-09-01',
+                time: '09:00 - 12:00 น.',
+                branch: 'Happitat บางนา (ชั้น 5)',
+                instructor: 'อ. นพดล สุวรรณ',
+                participantsCount: 12,
+                status: 'Upcoming'
+            }
+        ];
+
+        /* STREAMING_CHUNK:Defining Shared UI Components... */
+        function NavItem({ icon, label, badge, active, onClick }) {
+            return (
+                <button
+                    onClick={onClick}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                        active 
+                            ? 'bg-lnc-pink text-white shadow-md shadow-rose-900/20 font-bold' 
+                            : 'text-zinc-400 hover:text-white hover:bg-zinc-800/80'
+                    }`}
+                >
+                    <div className="flex items-center space-x-2.5">
+                        <i data-lucide={icon} className={`w-4 h-4 ${active ? 'text-white' : 'text-zinc-400'}`}></i>
+                        <span>{label}</span>
+                    </div>
+                    {badge !== undefined && (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            active ? 'bg-white/20 text-white' : 'bg-zinc-800 text-zinc-300'
+                        }`}>
+                            {badge}
+                        </span>
+                    )}
+                </button>
+            );
+        }
+
+        function StatCard({ title, value, icon, subtitle, color }) {
+            return (
+                <div className="bg-white p-5 rounded-xl border border-zinc-200 shadow-sm space-y-2">
+                    <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{title}</span>
+                        <div className={`p-2 rounded-lg bg-zinc-50 ${color}`}>
+                            <i data-lucide={icon} className="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    <div className="flex items-baseline space-x-2">
+                        <span className="text-2xl font-black text-zinc-900">{value}</span>
+                    </div>
+                    {subtitle && <p className="text-[11px] text-zinc-400 leading-tight">{subtitle}</p>}
+                </div>
+            );
+        }
+
+        /* STREAMING_CHUNK:Defining Modals... */
+        function CandidateDetailModal({ candidate, onClose, onUpdateStage }) {
+            return (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+                        <div className="flex items-start justify-between border-b pb-3">
+                            <div>
+                                <h3 className="font-black text-lg text-zinc-900">{candidate.name} ({candidate.nickname})</h3>
+                                <p className="text-xs text-zinc-500">{candidate.jobTitle}</p>
+                            </div>
+                            <button onClick={onClose} className="text-zinc-400 font-bold hover:text-zinc-600">✕</button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 text-xs">
+                            <p>📞 เบอร์โทร: {candidate.phone}</p>
+                            <p>✉️ Email: {candidate.email}</p>
+                            <p>🎓 การศึกษา: {candidate.education}</p>
+                            <p>💰 เงินเดือนคาดหวัง: {candidate.expectedSalary}</p>
+                            <p>📌 แหล่งที่มา: {candidate.source}</p>
+                            <p>📍 สถานะปัจจุบัน: <span className="font-bold text-lnc-pink">{candidate.stage}</span></p>
+                        </div>
+                        <div className="flex justify-end space-x-2 pt-3 border-t">
+                            <button onClick={() => onUpdateStage(candidate.id, 'Probation')} className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition">รับเข้าทดลองงาน</button>
+                            <button onClick={() => onUpdateStage(candidate.id, 'Passed Probation')} className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">ผ่านทดลองงาน</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function DemoTeachingModal({ candidate, onClose, onSave }) {
+            return (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white p-6 rounded-2xl max-w-md w-full space-y-4 shadow-2xl">
+                        <div className="flex justify-between items-center border-b pb-2">
+                            <h3 className="font-bold text-base text-zinc-900">ประเมิน Demo Teaching</h3>
+                            <button onClick={onClose} className="text-zinc-400 font-bold">✕</button>
+                        </div>
+                        <p className="text-xs text-zinc-600">ผู้สมัคร: <strong>{candidate.name}</strong> ({candidate.jobTitle})</p>
+                        <div className="space-y-2 text-xs">
+                            <label className="block font-bold">ผลการทดลองสอน:</label>
+                            <button onClick={() => onSave(candidate.id, { knowledge: 5, delivery: 5 }, 'Offer')} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold">ผ่านการทดลองสอน (ผ่านเข้าสู่ Stage: Offer)</button>
+                            <button onClick={() => onSave(candidate.id, null, 'Backup Pool')} className="w-full bg-amber-500 hover:bg-amber-600 text-white py-2 rounded-lg font-bold">เก็บเข้า Backup Pool (สำรอง)</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function CreateDevPlanModal({ employee, onClose, onSave }) {
+            const [type, setType] = React.useState('Shadowing');
+            const [title, setTitle] = React.useState('');
+            const [mentor, setMentor] = React.useState('ครูพี่เอก (Academic Head)');
+            const [targetDate, setTargetDate] = React.useState('');
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onSave({
+                    id: 'd_' + Date.now(),
+                    empId: employee.id,
+                    empName: employee.name,
+                    type,
+                    title,
+                    skillGap: 'General Skill Improvement',
+                    mentor,
+                    targetDate,
+                    status: 'In Progress'
+                });
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl max-w-md w-full space-y-4 text-xs shadow-2xl">
+                        <div className="flex justify-between items-center border-b pb-2">
+                            <h3 className="font-bold text-base text-zinc-900">สร้างแผนพัฒนา: {employee.name}</h3>
+                            <button type="button" onClick={onClose} className="text-zinc-400 font-bold">✕</button>
+                        </div>
+                        <div>
+                            <label className="font-bold block mb-1">รูปแบบการพัฒนา *</label>
+                            <select value={type} onChange={e => setType(e.target.value)} className="w-full border p-2 rounded-lg bg-white">
+                                <option value="Shadowing">Shadowing (สังเกตการณ์คลาสครูรุ่นพี่)</option>
+                                <option value="Coaching">Coaching (สอนงานแบบตัวต่อตัว)</option>
+                                <option value="OJT">OJT (On-the-Job Training)</option>
+                                <option value="Workshop">Workshop</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="font-bold block mb-1">หัวข้อกิจกรรม *</label>
+                            <input type="text" placeholder="เช่น Shadowing เทคนิคคุมเด็กหลังห้อง..." value={title} onChange={e => setTitle(e.target.value)} className="w-full border p-2 rounded-lg" required />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className="font-bold block mb-1">Mentor / ผู้ดูแล *</label>
+                                <input type="text" value={mentor} onChange={e => setMentor(e.target.value)} className="w-full border p-2 rounded-lg" required />
+                            </div>
+                            <div>
+                                <label className="font-bold block mb-1">กำหนดเสร็จ *</label>
+                                <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} className="w-full border p-2 rounded-lg" required />
+                            </div>
+                        </div>
+                        <div className="flex justify-end space-x-2 pt-2 border-t">
+                            <button type="button" onClick={onClose} className="px-3 py-2 border rounded-lg">ยกเลิก</button>
+                            <button type="submit" className="px-4 py-2 bg-lnc-pink text-white font-bold rounded-lg hover:bg-rose-700">บันทึกแผนพัฒนา</button>
+                        </div>
+                    </form>
+                </div>
+            );
+        }
+
+        function CreateJobModal({ branches, onClose, onSave }) {
+            const [title, setTitle] = React.useState('');
+            const [dept, setDept] = React.useState('Academic/Tutor');
+            const [branchId, setBranchId] = React.useState(branches[0]?.id || 'b1');
+            const [type, setType] = React.useState('Full-Time');
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onSave({
+                    id: 'j_' + Date.now(),
+                    title,
+                    dept,
+                    branchId,
+                    type,
+                    status: 'Open'
+                });
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl max-w-md w-full space-y-4 text-xs shadow-2xl">
+                        <div className="flex justify-between items-center border-b pb-2">
+                            <h3 className="font-bold text-base text-zinc-900">เปิดตำแหน่งงานใหม่</h3>
+                            <button type="button" onClick={onClose} className="text-zinc-400 font-bold">✕</button>
+                        </div>
+                        <div>
+                            <label className="font-bold block mb-1">ชื่อตำแหน่ง *</label>
+                            <input type="text" placeholder="เช่น คุณครูประจำ - ชีววิทยา" value={title} onChange={e => setTitle(e.target.value)} className="w-full border p-2 rounded-lg" required />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className="font-bold block mb-1">แผนก *</label>
+                                <select value={dept} onChange={e => setDept(e.target.value)} className="w-full border p-2 rounded-lg bg-white">
+                                    <option value="Academic/Tutor">Academic/Tutor</option>
+                                    <option value="Branch Staff">Branch Staff</option>
+                                    <option value="Support">Support</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="font-bold block mb-1">รูปแบบ *</label>
+                                <select value={type} onChange={e => setType(e.target.value)} className="w-full border p-2 rounded-lg bg-white">
+                                    <option value="Full-Time">Full-Time</option>
+                                    <option value="Part-Time">Part-Time</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label className="font-bold block mb-1">ประจำสาขา *</label>
+                            <select value={branchId} onChange={e => setBranchId(e.target.value)} className="w-full border p-2 rounded-lg bg-white">
+                                {branches.map(b => (
+                                    <option key={b.id} value={b.id}>{b.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="flex justify-end space-x-2 pt-2 border-t">
+                            <button type="button" onClick={onClose} className="px-3 py-2 border rounded-lg">ยกเลิก</button>
+                            <button type="submit" className="px-4 py-2 bg-lnc-pink text-white font-bold rounded-lg hover:bg-rose-700">เปิดรับสมัคร</button>
+                        </div>
+                    </form>
+                </div>
+            );
+        }
+
+        /* STREAMING_CHUNK:Defining Main Views... */
+        function DashboardView({ candidates, employees, developments, trainings, jobs, setSelectedCandidateDetail }) {
+            const probationStaff = candidates.filter(c => c.stage === 'Probation');
+
+            return (
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <StatCard title="ตำแหน่งที่เปิดรับ (Jobs)" value={jobs.filter(j => j.status === 'Open').length} icon="briefcase" subtitle="ตำแหน่งที่เปิดรับสมัครอยู่" color="text-blue-600" />
+                        <StatCard title="ผู้สมัครในระบบทั้งหมด" value={candidates.length} icon="users" subtitle={`ทดลองงาน: ${probationStaff.length} คน`} color="text-lnc-pink" />
+                        <StatCard title="แผนพัฒนาค้างติดตาม" value={developments.filter(d => d.status !== 'Completed').length} icon="alert-circle" subtitle="Coaching / Shadowing" color="text-amber-500" />
+                        <StatCard title="อบรม/Workshop เดือนนี้" value={trainings.length} icon="calendar" subtitle="ตารางอบรมติวเตอร์" color="text-emerald-600" />
+                    </div>
+
+                    <div className="bg-white rounded-xl p-5 border border-zinc-200 shadow-sm space-y-3">
+                        <div className="flex items-center justify-between border-b border-zinc-100 pb-2">
+                            <h3 className="font-bold text-zinc-900 text-xs uppercase tracking-wide">⏳ ติดตามพนักงานช่วงทดลองงาน (Probation Tracker)</h3>
+                            <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 font-bold px-2 py-0.5 rounded">
+                                {probationStaff.length} คนอยู่ในระยะทดลองงาน
+                            </span>
+                        </div>
+
+                        {probationStaff.length === 0 ? (
+                            <p className="text-xs text-zinc-400 py-6 text-center">ไม่มีพนักงานในระยะทดลองงานขณะนี้</p>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {probationStaff.map(st => (
+                                    <div key={st.id} className="p-3 bg-zinc-50 rounded-lg border border-zinc-200 flex flex-col justify-between">
+                                        <div>
+                                            <div className="flex justify-between items-start">
+                                                <span className="font-bold text-xs text-zinc-900">{st.name} ({st.nickname})</span>
+                                                <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded">เหลือ {st.probationDaysLeft || 45} วัน</span>
+                                            </div>
+                                            <p className="text-xs text-zinc-500 mt-0.5">{st.jobTitle}</p>
+                                        </div>
+                                        <div className="mt-3 pt-2 border-t border-zinc-200 flex justify-between items-center">
+                                            <span className="text-[10px] text-zinc-500">ที่มา: {st.source}</span>
+                                            <button onClick={() => setSelectedCandidateDetail(st)} className="text-xs font-bold text-lnc-pink hover:underline">รายละเอียด/ประเมิน &rarr;</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function RecruitmentView({ candidates, setCandidates, setActiveDemoModal, setSelectedCandidateDetail, showToast, supabaseUrl, supabaseKey }) {
+            const stages = ['Application', 'Screening', 'Interview', 'Demo Teaching', 'Backup Pool', 'Offer', 'Probation', 'Passed Probation'];
+
+            const handleStageMove = async (candId, newStage) => {
+                setCandidates(candidates.map(c => c.id === candId ? { ...c, stage: newStage } : c));
+                showToast(`ย้าย Candidate ไปยังขั้นตอน "${newStage}" เรียบร้อยแล้ว`);
+
+                if (supabaseUrl && supabaseKey && window.supabase) {
+                    try {
+                        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                        await supabase.from('candidates').update({ stage: newStage }).eq('id', candId);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            };
+
+            return (
+                <div className="space-y-6">
+                    <div className="bg-zinc-900 text-white p-4 rounded-xl shadow-md flex items-center justify-between">
+                        <div>
+                            <span className="text-[10px] font-bold uppercase bg-lnc-pink text-white px-2 py-0.5 rounded tracking-wider">LNC ATS Pipeline</span>
+                            <h3 className="text-lg font-bold mt-1">บอร์ดคัดเลือกติวเตอร์ & บุคลากร LNC Plus</h3>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-2xl font-extrabold text-white">{candidates.length}</span>
+                            <p className="text-xs text-zinc-400">ใบสมัครทั้งหมด</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-8 gap-3 overflow-x-auto pb-4 custom-scrollbar">
+                        {stages.map(stage => {
+                            const stageCandidates = candidates.filter(c => c.stage === stage);
+                            return (
+                                <div key={stage} className="p-2.5 rounded-xl border min-w-[210px] flex flex-col h-[600px] bg-zinc-100/70 border-zinc-200">
+                                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-300">
+                                        <h4 className="text-[11px] font-extrabold text-zinc-700 tracking-wide uppercase line-clamp-1">{stage}</h4>
+                                        <span className="text-[10px] bg-zinc-200 text-zinc-700 font-bold px-2 py-0.5 rounded-full">{stageCandidates.length}</span>
+                                    </div>
+
+                                    <div className="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1">
+                                        {stageCandidates.map(c => (
+                                            <div key={c.id} className="bg-white p-3 rounded-lg border border-zinc-200 shadow-sm hover:border-lnc-pink transition">
+                                                <div className="flex items-start justify-between">
+                                                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-lnc-pink border border-rose-200">{c.type}</span>
+                                                </div>
+
+                                                <h5 onClick={() => setSelectedCandidateDetail(c)} className="font-bold text-xs text-zinc-900 mt-2 hover:text-lnc-pink cursor-pointer flex items-center justify-between">
+                                                    <span>{c.name} {c.nickname ? `(${c.nickname})` : ''}</span>
+                                                    <i data-lucide="chevron-right" className="w-3 h-3 text-zinc-400"></i>
+                                                </h5>
+                                                <p className="text-[11px] text-zinc-500 line-clamp-1">{c.jobTitle}</p>
+
+                                                <div className="mt-3 pt-2 border-t border-zinc-100">
+                                                    {stage === 'Demo Teaching' ? (
+                                                        <button onClick={() => setActiveDemoModal(c)} className="w-full bg-lnc-pink text-white text-[10px] py-1 rounded font-medium">ประเมิน Demo</button>
+                                                    ) : (
+                                                        <select value={c.stage} onChange={(e) => handleStageMove(c.id, e.target.value)} className="w-full bg-zinc-50 text-[10px] border rounded p-1">
+                                                            {stages.map(s => <option key={s} value={s}>{s}</option>)}
+                                                        </select>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+
+        function DevelopmentView({ employees, developments, setActiveDevModal }) {
+            const [selectedEmp, setSelectedEmp] = React.useState(employees[0] || null);
+
+            return (
+                <div className="space-y-6">
+                    <div className="bg-zinc-900 text-white p-5 rounded-xl shadow-md flex items-center justify-between">
+                        <div>
+                            <span className="text-[10px] font-bold uppercase bg-lnc-pink text-white px-2 py-0.5 rounded tracking-wider">Quality & Capability Matrix</span>
+                            <h3 className="text-lg font-bold mt-1">ระบบติดตามคุณภาพและการพัฒนาบุคลากร (Tutor Skill Quality)</h3>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="bg-white rounded-xl border border-zinc-200 p-4 shadow-sm space-y-3">
+                            <h4 className="font-bold text-xs uppercase text-zinc-500 tracking-wider">รายชื่อบุคลากร / ติวเตอร์</h4>
+                            <div className="space-y-2">
+                                {employees.map(emp => (
+                                    <div 
+                                        key={emp.id}
+                                        onClick={() => setSelectedEmp(emp)}
+                                        className={`p-3 rounded-lg border cursor-pointer transition ${
+                                            selectedEmp && selectedEmp.id === emp.id 
+                                                ? 'border-lnc-pink bg-rose-50/50 shadow-sm' 
+                                                : 'border-zinc-200 hover:border-zinc-300 bg-white'
+                                        }`}
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <span className="font-bold text-xs text-zinc-900">{emp.name}</span>
+                                            <span className="text-[10px] bg-zinc-100 text-zinc-700 font-semibold px-1.5 py-0.5 rounded">{emp.type}</span>
+                                        </div>
+                                        <p className="text-[11px] text-zinc-500 mt-0.5">{emp.role}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {selectedEmp && (
+                            <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-sm lg:col-span-2 space-y-5">
+                                <div className="flex items-center justify-between border-b pb-3">
+                                    <div>
+                                        <h4 className="font-black text-base text-zinc-900">{selectedEmp.name}</h4>
+                                        <p className="text-xs text-zinc-500">{selectedEmp.role}</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => setActiveDevModal(selectedEmp)}
+                                        className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg flex items-center space-x-1 transition shadow-sm"
+                                    >
+                                        <i data-lucide="plus" className="w-3.5 h-3.5"></i>
+                                        <span>สร้างแผนพัฒนา (Action Plan)</span>
+                                    </button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h5 className="text-xs font-bold uppercase text-zinc-500">Skill Competency vs Target Score (1-5)</h5>
+                                    {selectedEmp.skills.map(sk => {
+                                        const isGap = sk.score < sk.target;
+                                        return (
+                                            <div key={sk.name} className="space-y-1">
+                                                <div className="flex justify-between text-xs">
+                                                    <span className="font-semibold text-zinc-800">{sk.name}</span>
+                                                    <span className="font-bold">
+                                                        <span className={isGap ? 'text-rose-600' : 'text-emerald-600'}>{sk.score}</span> / {sk.target} คะแนน
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-zinc-100 h-3 rounded-full overflow-hidden relative">
+                                                    <div className={`h-full rounded-full ${isGap ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${(sk.score / 5) * 100}%` }}></div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function TrainingView({ trainings }) {
+            return (
+                <div className="space-y-6">
+                    <div className="bg-zinc-900 text-white p-5 rounded-xl shadow-md flex items-center justify-between">
+                        <div>
+                            <span className="text-[10px] font-bold uppercase bg-lnc-pink text-white px-2 py-0.5 rounded tracking-wider">Capability Building</span>
+                            <h3 className="text-lg font-bold mt-1">ศูนย์ฝึกอบรม & Workshop (Training Hub)</h3>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {trainings.map(t => (
+                                <div key={t.id} className="p-4 bg-zinc-50 rounded-xl border border-zinc-200 space-y-3">
+                                    <div className="flex justify-between items-start">
+                                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">{t.status}</span>
+                                        <span className="text-xs text-zinc-400">👥 ผู้เข้าร่วม {t.participantsCount} คน</span>
+                                    </div>
+                                    <h5 className="font-bold text-sm text-zinc-900">{t.title}</h5>
+                                    <div className="text-xs text-zinc-600 space-y-1">
+                                        <p>📅 วันที่: {t.date} | {t.time}</p>
+                                        <p>📍 สถานที่: {t.branch}</p>
+                                        <p>👨‍🏫 วิทยากร: {t.instructor}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        /* STREAMING_CHUNK:Main App Entry Component... */
+        function App() {
+            const [currentTab, setCurrentTab] = React.useState('dashboard');
+            const [selectedBranch, setSelectedBranch] = React.useState('ALL');
+            
+            const [supabaseUrl, setSupabaseUrl] = React.useState(localStorage.getItem('lnc_sp_url') || '');
+            const [supabaseKey, setSupabaseKey] = React.useState(localStorage.getItem('lnc_sp_key') || '');
+            const [showConfigModal, setShowConfigModal] = React.useState(false);
+            const [isDbConnected, setIsDbConnected] = React.useState(false);
+
+            const [candidates, setCandidates] = React.useState(INITIAL_CANDIDATES);
+            const [employees, setEmployees] = React.useState(INITIAL_EMPLOYEES);
+            const [developments, setDevelopments] = React.useState(INITIAL_DEVELOPMENTS);
+            const [jobs, setJobs] = React.useState(INITIAL_JOBS);
+            const [trainings, setTrainings] = React.useState(INITIAL_TRAININGS);
+
+            const [activeDemoModal, setActiveDemoModal] = React.useState(null);
+            const [activeDevModal, setActiveDevModal] = React.useState(null);
+            const [activeJobModal, setActiveJobModal] = React.useState(false);
+            const [selectedCandidateDetail, setSelectedCandidateDetail] = React.useState(null);
+
+            const [toast, setToast] = React.useState(null);
+
+            const showToast = (msg) => {
+                setToast(msg);
+                setTimeout(() => setToast(null), 3000);
+            };
+
+            const fetchFromSupabase = React.useCallback(async () => {
+                if (!supabaseUrl || !supabaseKey || !window.supabase) return;
+                try {
+                    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                    const { data: candData, error: candErr } = await supabase.from('candidates').select('*').order('created_at', { ascending: false });
+                    if (!candErr && candData && candData.length > 0) {
+                        const mappedCands = candData.map(c => ({
+                            id: c.id,
+                            name: c.full_name,
+                            nickname: c.nickname || '',
+                            jobTitle: c.job_title || 'คุณครูประจำ',
+                            type: c.candidate_type || 'Tutor',
+                            stage: c.stage || 'Application',
+                            branchId: 'b1',
+                            phone: c.phone || '-',
+                            email: c.email || '-',
+                            education: c.education_level || 'ปริญญาตรี',
+                            expectedSalary: c.expected_salary || '-',
+                            source: c.source || 'เพจ Facebook',
+                            score: null
+                        }));
+                        setCandidates(mappedCands);
+                        setIsDbConnected(true);
+                    }
+                } catch (err) {
+                    console.error('Supabase fetch error:', err);
+                }
+            }, [supabaseUrl, supabaseKey]);
+
+            React.useEffect(() => {
+                fetchFromSupabase();
+            }, [fetchFromSupabase]);
+
+            React.useEffect(() => {
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    window.lucide.createIcons();
+                }
+            });
+
+            const handleSaveConfig = (e) => {
+                e.preventDefault();
+                localStorage.setItem('lnc_sp_url', supabaseUrl);
+                localStorage.setItem('lnc_sp_key', supabaseKey);
+                setShowConfigModal(false);
+                fetchFromSupabase();
+                showToast('บันทึกการเชื่อมต่อ Supabase เรียบร้อยแล้ว');
+            };
+
+            const filterByBranch = (item) => {
+                if (selectedBranch === 'ALL') return true;
+                return item.branchId === selectedBranch;
+            };
+
+            return (
+                <div className="flex h-screen overflow-hidden bg-lnc-bg">
+                    {/* Sidebar Navigation */}
+                    <aside className="w-64 bg-lnc-dark text-white flex flex-col justify-between shrink-0 shadow-lg">
+                        <div>
+                            <div className="p-5 border-b border-zinc-800 flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <div className="bg-lnc-pink text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xl tracking-tighter shadow-md">
+                                        LNC<span className="text-xs text-white font-light">+</span>
+                                    </div>
+                                    <div>
+                                        <h1 className="font-bold text-base leading-tight tracking-wide">LNC PLUS HR</h1>
+                                        <p className="text-[10px] text-zinc-400">Step to Beyond Learning</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-4 border-b border-zinc-800">
+                                <label className="text-[11px] font-semibold text-zinc-400 block mb-1">เลือกสาขา / Branch Filter</label>
+                                <select 
+                                    value={selectedBranch} 
+                                    onChange={(e) => setSelectedBranch(e.target.value)}
+                                    className="w-full bg-zinc-800 text-xs text-zinc-200 rounded-md p-2 border border-zinc-700 focus:outline-none focus:border-lnc-pink"
+                                >
+                                    <option value="ALL">ทุกสาขา (All Branches)</option>
+                                    {INITIAL_BRANCHES.map(b => (
+                                        <option key={b.id} value={b.id}>{b.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <nav className="p-4 space-y-1">
+                                <NavItem icon="layout-dashboard" label="Dashboard" active={currentTab === 'dashboard'} onClick={() => setCurrentTab('dashboard')} />
+                                <NavItem icon="users" label="Recruitment ATS" badge={candidates.length} active={currentTab === 'recruitment'} onClick={() => setCurrentTab('recruitment')} />
+                                <NavItem icon="trending-up" label="People Development" badge={developments.filter(d => d.status !== 'Completed').length} active={currentTab === 'development'} onClick={() => setCurrentTab('development')} />
+                                <NavItem icon="award" label="Training Hub" active={currentTab === 'training'} onClick={() => setCurrentTab('training')} />
+                            </nav>
+                        </div>
+
+                        <div className="p-4 border-t border-zinc-800 flex items-center justify-between text-xs text-zinc-400">
+                            <div>
+                                <p className="font-medium text-zinc-200 text-xs">HR Admin Portal</p>
+                                <p className={`text-[10px] ${isDbConnected ? 'text-emerald-400 font-bold' : 'text-amber-400'}`}>
+                                    {isDbConnected ? '⚡ Supabase Live Connected' : '☁️ Local / GitHub Mode'}
+                                </p>
+                            </div>
+                        </div>
+                    </aside>
+
+                    {/* Main Content Area */}
+                    <main className="flex-1 flex flex-col overflow-hidden">
+                        <header className="bg-white border-b border-zinc-200 px-8 py-3.5 flex items-center justify-between shadow-sm">
+                            <div>
+                                <h2 className="text-lg font-bold text-zinc-900">
+                                    {currentTab === 'dashboard' && 'HR Executive Overview'}
+                                    {currentTab === 'recruitment' && 'Recruitment Pipeline (ATS)'}
+                                    {currentTab === 'development' && 'Tutor Quality & People Development'}
+                                    {currentTab === 'training' && 'Training & Capability Building'}
+                                </h2>
+                                <p className="text-xs text-zinc-500 mt-0.5">
+                                    สถาบันกวดวิชา LNC Plus • Step to Beyond Learning
+                                </p>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                                <button onClick={() => setShowConfigModal(true)} className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border text-xs font-semibold px-3 py-2 rounded-lg flex items-center space-x-1 transition shadow-sm">
+                                    <i data-lucide="database" className="w-4 h-4 text-lnc-pink"></i>
+                                    <span>⚙️ ตั้งค่า Supabase DB</span>
+                                </button>
+                                <button onClick={() => setActiveJobModal(true)} className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center space-x-1 transition shadow-sm">
+                                    <i data-lucide="plus" className="w-4 h-4"></i>
+                                    <span>เปิดตำแหน่งงานใหม่</span>
+                                </button>
+                            </div>
+                        </header>
+
+                        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                            {currentTab === 'dashboard' && (
+                                <DashboardView 
+                                    candidates={candidates.filter(filterByBranch)}
+                                    employees={employees.filter(filterByBranch)}
+                                    developments={developments}
+                                    trainings={trainings}
+                                    jobs={jobs.filter(filterByBranch)}
+                                    setSelectedCandidateDetail={setSelectedCandidateDetail}
+                                />
+                            )}
+
+                            {currentTab === 'recruitment' && (
+                                <RecruitmentView 
+                                    candidates={candidates.filter(filterByBranch)}
+                                    setCandidates={setCandidates}
+                                    setActiveDemoModal={setActiveDemoModal}
+                                    setSelectedCandidateDetail={setSelectedCandidateDetail}
+                                    showToast={showToast}
+                                    supabaseUrl={supabaseUrl}
+                                    supabaseKey={supabaseKey}
+                                />
+                            )}
+
+                            {currentTab === 'development' && (
+                                <DevelopmentView 
+                                    employees={employees.filter(filterByBranch)}
+                                    developments={developments}
+                                    setActiveDevModal={setActiveDevModal}
+                                />
+                            )}
+
+                            {currentTab === 'training' && (
+                                <TrainingView trainings={trainings} />
+                            )}
+                        </div>
+                    </main>
+
+                    {/* Supabase Config Modal */}
+                    {showConfigModal && (
+                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                            <form onSubmit={handleSaveConfig} className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+                                <div className="flex items-start justify-between border-b pb-3">
+                                    <div>
+                                        <h3 className="font-bold text-base text-zinc-900">เชื่อมต่อ Supabase Database</h3>
+                                        <p className="text-xs text-zinc-500">ใส่ Supabase URL และ Key สำหรับใช้งานฐานข้อมูลจริง</p>
+                                    </div>
+                                    <button type="button" onClick={() => setShowConfigModal(false)} className="text-zinc-400 font-bold">✕</button>
+                                </div>
+                                <div className="space-y-3 text-xs">
+                                    <div>
+                                        <label className="font-bold block mb-1">Supabase URL</label>
+                                        <input type="url" placeholder="https://xyzcompany.supabase.co" value={supabaseUrl} onChange={e => setSupabaseUrl(e.target.value)} className="w-full border p-2 rounded-lg font-mono text-[11px]" required />
+                                    </div>
+                                    <div>
+                                        <label className="font-bold block mb-1">Supabase Anon Key</label>
+                                        <input type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." value={supabaseKey} onChange={e => setSupabaseKey(e.target.value)} className="w-full border p-2 rounded-lg font-mono text-[11px]" required />
+                                    </div>
+                                </div>
+                                <div className="flex justify-end space-x-2 pt-2 border-t">
+                                    <button type="button" onClick={() => setShowConfigModal(false)} className="px-3 py-2 border rounded-lg text-xs font-semibold">ยกเลิก</button>
+                                    <button type="submit" className="px-4 py-2 bg-lnc-pink text-white rounded-lg text-xs font-bold hover:bg-rose-700">บันทึก & เชื่อมต่อ</button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* Toast Notification */}
+                    {toast && (
+                        <div className="fixed bottom-6 right-6 bg-zinc-900 text-white px-4 py-3 rounded-lg shadow-xl text-xs flex items-center space-x-2 border-l-4 border-lnc-pink z-50">
+                            <i data-lucide="check-circle" className="w-4 h-4 text-lnc-pink"></i>
+                            <span>{toast}</span>
+                        </div>
+                    )}
+
+                    {/* Modals */}
+                    {activeDemoModal && (
+                        <DemoTeachingModal 
+                            candidate={activeDemoModal} 
+                            onClose={() => setActiveDemoModal(null)} 
+                            onSave={(id, updatedScore, newStage) => { 
+                                setCandidates(candidates.map(c => c.id === id ? { ...c, score: updatedScore, stage: newStage } : c)); 
+                                setActiveDemoModal(null); 
+                                showToast('บันทึกผลการประเมิน Demo Teaching เรียบร้อย!'); 
+                            }} 
+                        />
+                    )}
+                    {selectedCandidateDetail && (
+                        <CandidateDetailModal 
+                            candidate={selectedCandidateDetail} 
+                            onClose={() => setSelectedCandidateDetail(null)} 
+                            onUpdateStage={(id, newStage) => { 
+                                setCandidates(candidates.map(c => c.id === id ? { ...c, stage: newStage } : c)); 
+                                setSelectedCandidateDetail(null); 
+                                showToast(`อัปเดตสถานะเป็น "${newStage}" เรียบร้อย`); 
+                            }} 
+                        />
+                    )}
+                    {activeDevModal && (
+                        <CreateDevPlanModal 
+                            employee={activeDevModal} 
+                            onClose={() => setActiveDevModal(null)} 
+                            onSave={(newPlan) => { 
+                                setDevelopments([newPlan, ...developments]); 
+                                setActiveDevModal(null); 
+                                showToast('สร้างแผนพัฒนาเรียบร้อยแล้ว'); 
+                            }} 
+                        />
+                    )}
+                    {activeJobModal && (
+                        <CreateJobModal 
+                            branches={INITIAL_BRANCHES} 
+                            onClose={() => setActiveJobModal(false)} 
+                            onSave={(newJob) => { 
+                                setJobs([newJob, ...jobs]); 
+                                setActiveJobModal(false); 
+                                showToast('เปิดประกาศรับสมัครงานเรียบร้อยแล้ว'); 
+                            }} 
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
