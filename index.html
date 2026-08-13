@@ -46,18 +46,8 @@
         // ------------------------------------------------------------------------
         // 🔑 วาง Web App URL จาก Google Apps Script (doGet/doPost) ที่นี่
         // ------------------------------------------------------------------------
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw8fYZqnWkEJVnOzPBGIAsJQz4r9qUVKSH3ZAv-4ZUoT3b4T3AbWoZdz-TyKfNeUQtDyA/exec";
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxmylTMyJE7-PFu43CMVHfcirSvE--PGbLGX61wfAr-rIlC6iQ3xTo6pYTM4ky4hdMG3Q/exec";
         // ------------------------------------------------------------------------
-
-        const INITIAL_BRANCHES = [
-            { id: 'b1', name: 'Happitat บางนา (ชั้น 5)' },
-            { id: 'b2', name: 'เดอะไบรท์ พระราม 2' },
-            { id: 'b3', name: 'ข้างเซ็นทรัล พระราม 2' },
-            { id: 'b4', name: 'แลนมาร์ค มหาชัย' },
-            { id: 'b5', name: 'The Walk ราชพฤกษ์ นนทบุรี' },
-            { id: 'b6', name: 'Meta Mall เชียงใหม่' },
-            { id: 'b7', name: 'EZY Learn (ออนไลน์)' }
-        ];
 
         const ATS_STAGES = [
             { id: 'Application', title: '1. รับใบสมัคร', stepOrder: 1 },
@@ -113,43 +103,46 @@
             );
         }
 
-        function CandidateDetailModal({ candidate, onClose, onActionClick, onConvertToEmployee, onDeleteClick }) {
+        function CandidateDetailModal({ candidate, onClose, onActionClick, onConvertToEmployee, onDeleteClick, isConverted }) {
             if (!candidate) return null;
 
             return (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-                    <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl my-auto overflow-hidden border">
-                        <div className="bg-zinc-900 text-white p-6 flex items-start justify-between">
+                    <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl my-auto overflow-hidden border border-zinc-100">
+                        {/* Modern Dark Header */}
+                        <div className="bg-zinc-900 text-white p-6 sm:p-8 flex items-start justify-between">
                             <div>
-                                <div className="flex items-center space-x-2">
-                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-lnc-pink text-white uppercase">
+                                <div className="flex items-center space-x-2 flex-wrap gap-y-1">
+                                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-lnc-pink text-white uppercase tracking-wider shadow-sm">
                                         {candidate.candidate_type || 'Tutor'} Profile
                                     </span>
-                                    <span className="text-[10px] bg-zinc-800 text-zinc-300 font-bold px-2 py-0.5 rounded border border-zinc-700">
+                                    <span className="text-[10px] bg-zinc-800 text-zinc-300 font-bold px-2.5 py-1 rounded-lg border border-zinc-700">
                                         ID: {candidate.id}
                                     </span>
-                                    <span className="text-[10px] bg-emerald-900 text-emerald-300 font-bold px-2 py-0.5 rounded">
-                                        วันที่สมัคร: {candidate.created_at || 'สดจากชีท'}
+                                    <span className="text-[10px] bg-emerald-950 text-emerald-300 font-bold px-2.5 py-1 rounded-lg border border-emerald-800">
+                                        สมัครวันที่: {candidate.created_at || 'สดจากชีท'}
                                     </span>
                                 </div>
-                                <h3 className="font-black text-xl text-white mt-1">
+                                <h3 className="font-black text-2xl text-white mt-2">
                                     {candidate.full_name} {candidate.nickname ? `(${candidate.nickname})` : ''}
                                 </h3>
-                                <p className="text-xs text-zinc-400 mt-0.5">
-                                    ตำแหน่งที่สมัคร: <span className="text-rose-300 font-semibold">{candidate.job_title}</span>
+                                <p className="text-xs text-zinc-400 mt-1 flex items-center space-x-1">
+                                    <span>ตำแหน่งที่สมัคร:</span>
+                                    <span className="text-rose-300 font-bold">{candidate.job_title}</span>
                                 </p>
                             </div>
-                            <button onClick={onClose} className="text-zinc-400 hover:text-white font-bold p-1 text-lg">✕</button>
+                            <button onClick={onClose} className="text-zinc-400 hover:text-white font-bold p-2 bg-zinc-800 rounded-xl transition">✕</button>
                         </div>
 
-                        <div className="p-6 overflow-y-auto custom-scrollbar space-y-6 text-xs text-zinc-800">
-                            {/* Deep Section 1 */}
-                            <div className="space-y-3">
-                                <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-1.5 flex items-center space-x-2">
+                        {/* Scrollable Body */}
+                        <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar space-y-6 text-xs text-zinc-800 bg-zinc-50/50">
+                            {/* Section 1: Personal Info */}
+                            <div className="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs space-y-3">
+                                <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-2 flex items-center space-x-2">
                                     <i data-lucide="user" className="w-4 h-4 text-lnc-pink"></i>
                                     <span>1. ข้อมูลส่วนตัวและการติดต่อ</span>
                                 </h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-zinc-50 p-4 rounded-xl border">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <div><span className="text-zinc-400 block text-[10px]">ชื่อ-สกุล:</span><strong className="text-zinc-900">{candidate.full_name}</strong></div>
                                     <div><span className="text-zinc-400 block text-[10px]">ชื่อเล่น:</span><strong className="text-zinc-900">{candidate.nickname || '-'}</strong></div>
                                     <div><span className="text-zinc-400 block text-[10px]">วันเกิด / อายุ:</span><strong className="text-zinc-900">{candidate.birthdate || '-'} ({candidate.age || '-'} ปี)</strong></div>
@@ -157,61 +150,62 @@
                                     <div><span className="text-zinc-400 block text-[10px]">ID Line:</span><strong className="text-zinc-900">{candidate.line_id || '-'}</strong></div>
                                     <div><span className="text-zinc-400 block text-[10px]">Email:</span><strong className="text-zinc-900">{candidate.email || '-'}</strong></div>
                                     <div className="sm:col-span-2"><span className="text-zinc-400 block text-[10px]">ที่อยู่ปัจจุบัน:</span><span className="text-zinc-800">{candidate.address || '-'}</span></div>
-                                    <div><span className="text-zinc-400 block text-[10px]">ยินยอม PDPA:</span><span className="font-bold text-emerald-600">✓ {candidate.pdpa_consent || 'ยินยอม'}</span></div>
+                                    <div><span className="text-zinc-400 block text-[10px]">ยินยอม PDPA (1 ปี):</span><span className="font-bold text-emerald-600">✓ {candidate.pdpa_consent || 'ยินยอม'}</span></div>
                                 </div>
                             </div>
 
-                            {/* Deep Section 2 */}
-                            <div className="space-y-3">
-                                <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-1.5 flex items-center space-x-2">
+                            {/* Section 2: Source Tracking */}
+                            <div className="bg-rose-50/60 p-5 rounded-2xl border border-rose-200 shadow-xs space-y-3">
+                                <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b border-rose-200 pb-2 flex items-center space-x-2">
                                     <i data-lucide="compass" className="w-4 h-4 text-lnc-pink"></i>
-                                    <span>2. แหล่งที่มาการสมัครงาน & ผู้แนะนำ</span>
+                                    <span>2. แหล่งที่มาการสมัครงาน & ผู้แนะนำ (Source Tracking)</span>
                                 </h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-rose-50/50 p-4 rounded-xl border border-rose-200">
-                                    <div><span className="text-zinc-500 block text-[10px]">ช่องทางที่สมัคร:</span><span className="font-bold text-lnc-pink text-xs">{candidate.source || 'เพจ Facebook'}</span></div>
-                                    <div><span className="text-zinc-500 block text-[10px]">ผู้แนะนำ:</span><span className="font-bold text-zinc-900 text-xs">{candidate.referral_name || 'ไม่มี'}</span></div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div><span className="text-zinc-500 block text-[10px]">ช่องทางที่สมัคร:</span><span className="font-bold text-lnc-pink text-xs bg-white px-2 py-1 rounded-lg border border-rose-200 inline-block mt-0.5">{candidate.source || 'เพจ Facebook'}</span></div>
+                                    <div><span className="text-zinc-500 block text-[10px]">ผู้แนะนำ:</span><span className="font-bold text-zinc-900 text-xs">{candidate.referral_name || 'ไม่มีผู้แนะนำ'}</span></div>
                                 </div>
                             </div>
 
-                            {/* Deep Section 3 */}
-                            <div className="space-y-3">
-                                <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-1.5 flex items-center space-x-2">
+                            {/* Section 3: Teaching & Branch */}
+                            <div className="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs space-y-3">
+                                <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-2 flex items-center space-x-2">
                                     <i data-lucide="book-open" className="w-4 h-4 text-lnc-pink"></i>
                                     <span>3. คุณสมบัติการสอนและสาขา</span>
                                 </h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-zinc-50 p-4 rounded-xl border">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div className="sm:col-span-2"><span className="text-zinc-400 block text-[10px]">วิชาและระดับชั้นที่สอน:</span><strong className="text-zinc-900">{candidate.teaching_detail || '-'}</strong></div>
-                                    <div className="sm:col-span-2"><span className="text-zinc-400 block text-[10px]">ประสบการณ์:</span><p className="text-zinc-700 leading-relaxed mt-0.5">{candidate.experience || '-'}</p></div>
+                                    <div className="sm:col-span-2"><span className="text-zinc-400 block text-[10px]">ประสบการณ์:</span><p className="text-zinc-700 leading-relaxed mt-0.5 bg-zinc-50 p-3 rounded-xl border">{candidate.experience || '-'}</p></div>
                                     <div><span className="text-zinc-400 block text-[10px]">สาขาที่สะดวก:</span><strong className="text-lnc-pink">{candidate.branch_preference || '-'}</strong></div>
                                     <div><span className="text-zinc-400 block text-[10px]">เงินเดือนที่คาดหวัง:</span><strong className="text-emerald-700 font-mono">{candidate.expected_salary || '-'}</strong></div>
                                 </div>
                             </div>
 
-                            {/* Deep Section 4 */}
-                            <div className="space-y-3">
-                                <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-1.5 flex items-center space-x-2">
+                            {/* Section 4: Education */}
+                            <div className="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs space-y-3">
+                                <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-2 flex items-center space-x-2">
                                     <i data-lucide="graduation-cap" className="w-4 h-4 text-lnc-pink"></i>
                                     <span>4. การศึกษา & แรงจูงใจ</span>
                                 </h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-zinc-50 p-4 rounded-xl border">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div><span className="text-zinc-400 block text-[10px]">ระดับการศึกษา:</span><strong className="text-zinc-900">{candidate.education_level || '-'}</strong></div>
                                     <div><span className="text-zinc-400 block text-[10px]">คณะ / สาขา:</span><strong className="text-zinc-900">{candidate.faculty || '-'}</strong></div>
-                                    <div className="sm:col-span-2"><span className="text-zinc-400 block text-[10px]">เหตุผลที่อยากร่วมงาน:</span><p className="text-zinc-700 italic">"{candidate.reason_for_joining || '-'}"</p></div>
+                                    <div className="sm:col-span-2"><span className="text-zinc-400 block text-[10px]">เหตุผลที่อยากร่วมงาน:</span><p className="text-zinc-700 italic bg-zinc-50 p-3 rounded-xl border mt-0.5">"{candidate.reason_for_joining || '-'}"</p></div>
                                 </div>
                             </div>
 
-                            <div className="p-4 bg-zinc-900 text-white rounded-xl flex items-center justify-between">
+                            {/* Document Viewer Box */}
+                            <div className="p-4 bg-zinc-900 text-white rounded-2xl flex items-center justify-between shadow-md">
                                 <div className="flex items-center space-x-3">
-                                    <div className="p-2 bg-lnc-pink text-white rounded-lg">
+                                    <div className="p-2.5 bg-lnc-pink text-white rounded-xl">
                                         <i data-lucide="file-text" className="w-5 h-5"></i>
                                     </div>
                                     <div>
                                         <h5 className="font-bold text-xs">เอกสาร Resume / Portfolio / Google Drive</h5>
-                                        <p className="text-[10px] text-zinc-400">ไฟล์แนบจากผู้สมัคร</p>
+                                        <p className="text-[10px] text-zinc-400">ลิงก์ไฟล์แนบของผู้สมัคร</p>
                                     </div>
                                 </div>
                                 {candidate.resume_url ? (
-                                    <a href={candidate.resume_url} target="_blank" rel="noreferrer" className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center space-x-1.5 transition">
+                                    <a href={candidate.resume_url} target="_blank" rel="noreferrer" className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center space-x-1.5 transition shadow-sm">
                                         <span>เปิดดูเอกสาร</span>
                                         <i data-lucide="external-link" className="w-3.5 h-3.5"></i>
                                     </a>
@@ -221,23 +215,29 @@
                             </div>
                         </div>
 
-                        <div className="p-4 bg-zinc-50 border-t flex items-center justify-between shrink-0">
-                            <button onClick={() => onDeleteClick(candidate.id)} className="text-rose-600 hover:text-rose-800 text-xs font-bold px-3 py-2 rounded-lg border border-rose-200 hover:bg-rose-50 transition">
-                                🗑️ ลบใบสมัคร
+                        {/* Footer Action Bar */}
+                        <div className="p-5 bg-white border-t flex items-center justify-between shrink-0">
+                            <button onClick={() => onDeleteClick(candidate.id)} className="text-rose-600 hover:text-rose-800 text-xs font-bold px-4 py-2.5 rounded-xl border border-rose-200 hover:bg-rose-50 transition flex items-center space-x-1">
+                                <span>🗑️ ลบใบสมัคร</span>
                             </button>
                             <div className="flex space-x-2">
                                 {(candidate.stage === 'Passed Probation' || candidate.stage === 'Probation') && (
                                     <button 
                                         onClick={() => onConvertToEmployee(candidate)}
-                                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-md flex items-center space-x-1"
+                                        disabled={isConverted}
+                                        className={`text-xs font-bold px-5 py-2.5 rounded-xl transition shadow-md flex items-center space-x-1.5 ${
+                                            isConverted 
+                                                ? 'bg-zinc-300 text-zinc-500 cursor-not-allowed' 
+                                                : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                                        }`}
                                     >
                                         <i data-lucide="user-check" className="w-4 h-4"></i>
-                                        <span>🎉 บรรจุพนักงานประจำ (ออกรหัส 10 หลัก)</span>
+                                        <span>{isConverted ? '✓ บรรจุแล้ว (พนักงานประจำ)' : '🎉 บรรจุพนักงานประจำ (ออกรหัส 10 หลัก)'}</span>
                                     </button>
                                 )}
                                 <button 
                                     onClick={() => onActionClick(candidate)}
-                                    className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-md flex items-center space-x-1"
+                                    className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition shadow-md flex items-center space-x-1.5"
                                 >
                                     <span>ประเมิน / ย้ายขั้นตอนต่อไป</span>
                                     <i data-lucide="arrow-right" className="w-4 h-4"></i>
@@ -268,23 +268,23 @@
 
             return (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 text-xs">
-                        <div className="flex justify-between items-center border-b pb-2">
+                    <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-4 text-xs">
+                        <div className="flex justify-between items-center border-b pb-3">
                             <div>
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-zinc-100 text-zinc-700 uppercase">ขั้นตอน: {currentStageObj.title}</span>
-                                <h3 className="font-bold text-base text-zinc-900 mt-1">ประเมิน: {candidate.full_name}</h3>
+                                <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-zinc-100 text-zinc-700 uppercase">ขั้นตอน: {currentStageObj.title}</span>
+                                <h3 className="font-black text-base text-zinc-900 mt-1.5">ประเมิน: {candidate.full_name}</h3>
                             </div>
-                            <button onClick={onClose} className="text-zinc-400 font-bold">✕</button>
+                            <button onClick={onClose} className="text-zinc-400 font-bold p-1">✕</button>
                         </div>
                         <div>
-                            <label className="font-bold block mb-1">บันทึกผลการประเมิน / ความเห็นกรรมการ:</label>
-                            <textarea rows="3" placeholder="ระบุผลการประเมิน..." value={note} onChange={e => setNote(e.target.value)} className="w-full border rounded-xl p-2.5"></textarea>
+                            <label className="font-bold block mb-1.5 text-zinc-700">บันทึกผลการประเมิน / ความเห็นกรรมการ:</label>
+                            <textarea rows="3" placeholder="ระบุผลการประเมิน..." value={note} onChange={e => setNote(e.target.value)} className="w-full border rounded-2xl p-3 focus:border-lnc-pink focus:outline-none"></textarea>
                         </div>
-                        <div className="pt-2 border-t flex flex-col space-y-2">
-                            <button onClick={handlePassToNext} className="w-full bg-lnc-pink hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl transition">ผ่านการประเมิน ➔ ย้ายไปขั้นตอนถัดไป</button>
+                        <div className="pt-2 border-t flex flex-col space-y-2.5">
+                            <button onClick={handlePassToNext} className="w-full bg-lnc-pink hover:bg-rose-700 text-white font-bold py-3 rounded-2xl transition shadow-md">ผ่านการประเมิน ➔ ย้ายไปขั้นตอนถัดไป</button>
                             <div className="grid grid-cols-2 gap-2">
-                                <button onClick={() => onSaveNextStage(candidate.id, 'Backup Pool', { note: 'เก็บสำรอง' })} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl">📥 เก็บเข้า Backup Pool</button>
-                                <button onClick={() => onSaveNextStage(candidate.id, 'Rejected', { note: 'ไม่ผ่าน' })} className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold py-2 rounded-xl">✕ ไม่ผ่านการคัดเลือก</button>
+                                <button onClick={() => onSaveNextStage(candidate.id, 'Backup Pool', { note: 'เก็บสำรอง' })} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-2xl transition">📥 เก็บเข้า Backup Pool</button>
+                                <button onClick={() => onSaveNextStage(candidate.id, 'Rejected', { note: 'ไม่ผ่าน' })} className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold py-2.5 rounded-2xl transition">✕ ไม่ผ่านการคัดเลือก</button>
                             </div>
                         </div>
                     </div>
@@ -359,8 +359,15 @@
                 return true;
             });
 
-            // Convert Candidate to Official Employee with 10-digit random ID
+            // Convert Candidate to Official Employee with duplicate prevention lock
             const handleConvertToEmployee = (cand) => {
+                // Check if already converted
+                const alreadyExists = employees.some(e => e.name.includes(cand.full_name));
+                if (alreadyExists) {
+                    showToast(`⚠️ พนักงานคุณ ${cand.full_name} ถูกบรรจุเข้าสู่ระบบพนักงานประจำไปแล้วเรียบร้อยครับ`);
+                    return;
+                }
+
                 const random10Digit = Math.floor(1000000000 + Math.random() * 9000000000).toString();
                 const newEmp = {
                     id: 'e_' + Date.now(),
@@ -378,7 +385,7 @@
                 showToast(`🎉 บรรจุคุณ ${cand.full_name} เป็นพนักงานประจำสำเร็จ! รหัสพนักงาน: [${random10Digit}]`);
             };
 
-            const handleStageActionSave = (candId, nextStage, evalData) => {
+            const handleStageActionSave = (candId, nextStage) => {
                 setCandidates(candidates.map(c => c.id === candId ? { ...c, stage: nextStage } : c));
                 setActiveStageActionModal(null);
                 setSelectedCandidateDetail(null);
@@ -412,7 +419,7 @@
                 showToast(`📚 เพิ่มหลักสูตรอบรมให้ ${selectedEmpName} เรียบร้อยแล้ว`);
             };
 
-            // Analytics sources
+            // Analytics sources breakdown with real data mapping
             const sources = ['เพจ Facebook', 'กลุ่มหางานใน Facebook', 'Fastwork', 'IG', 'เพื่อนแนะนำ', 'อื่นๆ'];
             const sourceStats = sources.map(src => {
                 const count = filteredCandidates.filter(c => (c.source || 'เพจ Facebook') === src).length;
@@ -425,8 +432,8 @@
                     {/* Sidebar */}
                     <aside className="w-64 bg-zinc-900 text-white flex flex-col justify-between shrink-0 shadow-lg">
                         <div>
-                            <div className="p-5 border-b border-zinc-800 flex items-center space-x-3">
-                                <div className="bg-lnc-pink text-white w-9 h-9 rounded-xl flex items-center justify-center font-black text-lg">
+                            <div className="p-6 border-b border-zinc-800 flex items-center space-x-3">
+                                <div className="bg-lnc-pink text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-md">
                                     LNC<span className="text-xs font-light">+</span>
                                 </div>
                                 <div>
@@ -434,7 +441,7 @@
                                     <p className="text-[10px] text-zinc-400">Step to Beyond Learning</p>
                                 </div>
                             </div>
-                            <nav className="p-4 space-y-1">
+                            <nav className="p-4 space-y-1.5">
                                 <NavItem icon="layout-dashboard" label="ภาพรวม Dashboard & Analytics" active={currentTab === 'dashboard'} onClick={() => setCurrentTab('dashboard')} />
                                 <NavItem icon="users" label={`Recruitment ATS (${filteredCandidates.length})`} active={currentTab === 'ats'} onClick={() => setCurrentTab('ats')} />
                                 <NavItem icon="user-check" label={`ระบบพนักงาน (${employees.length})`} active={currentTab === 'employees'} onClick={() => setCurrentTab('employees')} />
@@ -448,58 +455,58 @@
 
                     {/* Main */}
                     <main className="flex-1 flex flex-col overflow-hidden">
-                        <header className="bg-white border-b px-6 py-3.5 flex items-center justify-between shadow-sm">
+                        <header className="bg-white border-b px-8 py-4 flex items-center justify-between shadow-xs">
                             <h2 className="text-base font-bold text-zinc-900">
                                 {currentTab === 'dashboard' && 'HR Executive Dashboard & Date Range Analytics'}
                                 {currentTab === 'ats' && 'Recruitment ATS Pipeline (เชื่อมต่อ Google Sheets)'}
                                 {currentTab === 'employees' && 'คลังข้อมูลพนักงานประจำ (รหัส 10 หลักอัตโนมัติ)'}
                                 {currentTab === 'training' && 'ระบบติดตามการฝึกอบรมพนักงาน (Probation & Official Staff)'}
                             </h2>
-                            <button onClick={fetchGASData} disabled={isFetching} className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-bold px-3.5 py-2 rounded-xl border flex items-center space-x-1.5 transition">
+                            <button onClick={fetchGASData} disabled={isFetching} className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-bold px-4 py-2.5 rounded-xl border flex items-center space-x-2 transition shadow-xs">
                                 <i data-lucide="refresh-cw" className={`w-3.5 h-3.5 text-lnc-pink ${isFetching ? 'animate-spin' : ''}`}></i>
                                 <span>{isFetching ? 'กำลังซิงก์...' : '🔄 ซิงก์ข้อมูล Google Sheets'}</span>
                             </button>
                         </header>
 
-                        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
+                        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-8">
                             {currentTab === 'dashboard' && (
                                 <div className="space-y-6">
                                     {/* Date Range Filter Bar */}
-                                    <div className="bg-white p-4 rounded-2xl border border-zinc-200 shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs">
-                                        <div className="flex items-center space-x-2">
+                                    <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-sm flex flex-wrap items-center justify-between gap-4 text-xs">
+                                        <div className="flex items-center space-x-2.5">
                                             <i data-lucide="calendar" className="w-4 h-4 text-lnc-pink"></i>
-                                            <span className="font-bold">กรองสถิติตามช่วงวันที่สมัคร:</span>
+                                            <span className="font-bold text-zinc-800">กรองสถิติตามช่วงวันที่สมัคร:</span>
                                         </div>
                                         <div className="flex items-center space-x-2">
-                                            <input type="date" value={startDateFilter} onChange={e => setStartDateFilter(e.target.value)} className="border rounded-lg p-1.5" />
+                                            <input type="date" value={startDateFilter} onChange={e => setStartDateFilter(e.target.value)} className="border rounded-xl p-2 bg-zinc-50" />
                                             <span>ถึง</span>
-                                            <input type="date" value={endDateFilter} onChange={e => setEndDateFilter(e.target.value)} className="border rounded-lg p-1.5" />
+                                            <input type="date" value={endDateFilter} onChange={e => setEndDateFilter(e.target.value)} className="border rounded-xl p-2 bg-zinc-50" />
                                             {(startDateFilter || endDateFilter) && (
-                                                <button onClick={() => { setStartDateFilter(''); setEndDateFilter(''); }} className="bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-lg font-bold">ล้างตัวกรอง</button>
+                                                <button onClick={() => { setStartDateFilter(''); setEndDateFilter(''); }} className="bg-zinc-100 hover:bg-zinc-200 px-3.5 py-2 rounded-xl font-bold">ล้างตัวกรอง</button>
                                             )}
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-5">
                                         <StatCard title="ผู้สมัครทั้งหมดตามช่วงเวลา" value={filteredCandidates.length} icon="users" color="text-zinc-900" />
                                         <StatCard title="อยู่ระหว่างทดลองงาน" value={filteredCandidates.filter(c => c.stage === 'Probation').length} icon="clock" color="text-amber-600" />
                                         <StatCard title="ผ่านการบรรจุประจำ" value={filteredCandidates.filter(c => c.stage === 'Passed Probation').length} icon="user-check" color="text-emerald-600" />
                                         <StatCard title="หลักสูตรอบรมทั้งหมด" value={trainings.length} icon="book" color="text-lnc-pink" />
                                     </div>
 
-                                    <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
+                                    <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-sm space-y-5">
                                         <h3 className="font-extrabold text-sm text-zinc-900">📊 วิเคราะห์ช่องทางแหล่งที่มาผู้สมัคร และอัตราผ่าน (Source Quality Analytics)</h3>
-                                        <div className="space-y-3">
+                                        <div className="space-y-4">
                                             {sourceStats.map(s => {
                                                 const pct = filteredCandidates.length > 0 ? Math.round((s.count / filteredCandidates.length) * 100) : 0;
                                                 return (
-                                                    <div key={s.name} className="space-y-1 text-xs">
+                                                    <div key={s.name} className="space-y-1.5 text-xs">
                                                         <div className="flex justify-between font-bold">
-                                                            <span>{s.name}</span>
+                                                            <span className="text-zinc-800">{s.name}</span>
                                                             <span className="text-emerald-700">{s.count} คน ({pct}%) | ผ่านทดลองงาน/สัมภาษณ์: {s.passedCount} คน</span>
                                                         </div>
-                                                        <div className="w-full bg-zinc-100 h-2.5 rounded-full overflow-hidden">
-                                                            <div className="bg-lnc-pink h-full" style={{ width: `${pct}%` }}></div>
+                                                        <div className="w-full bg-zinc-100 h-3 rounded-full overflow-hidden">
+                                                            <div className="bg-lnc-pink h-full rounded-full transition-all" style={{ width: `${pct}%` }}></div>
                                                         </div>
                                                     </div>
                                                 );
@@ -510,32 +517,32 @@
                             )}
 
                             {currentTab === 'ats' && (
-                                <div className="space-y-4">
-                                    <div className="bg-zinc-900 text-white p-5 rounded-2xl">
+                                <div className="space-y-5">
+                                    <div className="bg-zinc-900 text-white p-6 rounded-3xl shadow-sm">
                                         <h3 className="font-bold text-sm">บอร์ดคัดเลือกผู้สมัคร (ATS Pipeline)</h3>
-                                        <p className="text-xs text-zinc-400 mt-0.5">คลิกดูประวัติเต็ม หรือประเมินเพื่อย้ายขั้นตอน</p>
+                                        <p className="text-xs text-zinc-400 mt-1">คลิกดูประวัติเต็ม หรือประเมินเพื่อย้ายขั้นตอนอย่างเป็นระบบ</p>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-9 gap-3 overflow-x-auto pb-4 custom-scrollbar">
                                         {ATS_STAGES.map(stage => {
                                             const stageCandidates = candidates.filter(c => c.stage === stage.id);
                                             return (
-                                                <div key={stage.id} className="p-3 rounded-xl border min-w-[210px] flex flex-col h-[600px] bg-zinc-100 border-zinc-200">
+                                                <div key={stage.id} className="p-3.5 rounded-2xl border min-w-[210px] flex flex-col h-[600px] bg-zinc-100/70 border-zinc-200">
                                                     <div className="flex items-center justify-between pb-2 mb-2 border-b">
                                                         <h4 className="text-[11px] font-extrabold text-zinc-800 uppercase">{stage.title}</h4>
                                                         <span className="text-[10px] bg-zinc-200 text-zinc-800 font-bold px-2 py-0.5 rounded-full">{stageCandidates.length}</span>
                                                     </div>
-                                                    <div className="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1">
+                                                    <div className="space-y-2.5 flex-1 overflow-y-auto custom-scrollbar pr-1">
                                                         {stageCandidates.map(c => (
-                                                            <div key={c.id} className="bg-white p-3 rounded-xl border shadow-sm space-y-2">
+                                                            <div key={c.id} className="bg-white p-3.5 rounded-2xl border border-zinc-200 shadow-xs space-y-2">
                                                                 <div className="flex justify-between text-[9px]">
-                                                                    <span className="font-bold text-lnc-pink bg-rose-50 px-1 rounded">{c.source || 'Facebook'}</span>
+                                                                    <span className="font-bold text-lnc-pink bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-100">{c.source || 'Facebook'}</span>
                                                                     <span className="text-zinc-400">{c.created_at || 'ล่าสุด'}</span>
                                                                 </div>
                                                                 <div>
                                                                     <h5 className="font-bold text-xs text-zinc-900">{c.full_name} {c.nickname ? `(${c.nickname})` : ''}</h5>
-                                                                    <p className="text-[10px] text-zinc-500 line-clamp-1">{c.job_title}</p>
+                                                                    <p className="text-[10px] text-zinc-500 line-clamp-1 mt-0.5">{c.job_title}</p>
                                                                 </div>
-                                                                <button onClick={() => setSelectedCandidateDetail(c)} className="w-full bg-lnc-pink text-white text-[10px] py-1.5 rounded-lg font-bold">
+                                                                <button onClick={() => setSelectedCandidateDetail(c)} className="w-full bg-lnc-pink text-white text-[10px] py-2 rounded-xl font-bold shadow-xs hover:bg-rose-700 transition">
                                                                     ดูประวัติ / ประเมิน ➔
                                                                 </button>
                                                             </div>
@@ -549,36 +556,36 @@
                             )}
 
                             {currentTab === 'employees' && (
-                                <div className="space-y-4">
-                                    <div className="bg-zinc-900 text-white p-5 rounded-2xl flex justify-between items-center">
+                                <div className="space-y-5">
+                                    <div className="bg-zinc-900 text-white p-6 rounded-3xl flex justify-between items-center shadow-sm">
                                         <div>
                                             <h3 className="font-bold text-sm">คลังพนักงานประจำ (Official Employee Directory & 10-Digit ID)</h3>
-                                            <p className="text-xs text-zinc-400 mt-0.5">พนักงานที่ผ่านการบรรจุจะมีรหัสประจำตัว 10 หลักอัตโนมัติ</p>
+                                            <p className="text-xs text-zinc-400 mt-1">พนักงานที่ผ่านการบรรจุจะมีรหัสประจำตัว 10 หลักอัตโนมัติ ป้องกันการบันทึกซ้ำ</p>
                                         </div>
                                     </div>
-                                    <div className="bg-white rounded-2xl border overflow-hidden shadow-sm">
+                                    <div className="bg-white rounded-3xl border border-zinc-200 overflow-hidden shadow-sm">
                                         <table className="w-full text-xs text-left">
                                             <thead className="bg-zinc-100 border-b text-zinc-700 uppercase">
                                                 <tr>
-                                                    <th className="p-3">รหัสพนักงาน (10 หลัก)</th>
-                                                    <th className="p-3">ชื่อ-นามสกุล</th>
-                                                    <th className="p-3">ตำแหน่ง / บทบาท</th>
-                                                    <th className="p-3">แผนก</th>
-                                                    <th className="p-3">สาขา</th>
-                                                    <th className="p-3">แหล่งที่มาเดิม</th>
-                                                    <th className="p-3">สถานะ</th>
+                                                    <th className="p-4">รหัสพนักงาน (10 หลัก)</th>
+                                                    <th className="p-4">ชื่อ-นามสกุล</th>
+                                                    <th className="p-4">ตำแหน่ง / บทบาท</th>
+                                                    <th className="p-4">แผนก</th>
+                                                    <th className="p-4">สาขา</th>
+                                                    <th className="p-4">แหล่งที่มาเดิม</th>
+                                                    <th className="p-4">สถานะ</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y">
                                                 {employees.map(emp => (
                                                     <tr key={emp.id} className="hover:bg-zinc-50">
-                                                        <td className="p-3 font-mono font-black text-lnc-pink">{emp.empCode}</td>
-                                                        <td className="p-3 font-bold text-zinc-900">{emp.name}</td>
-                                                        <td className="p-3">{emp.role}</td>
-                                                        <td className="p-3">{emp.dept}</td>
-                                                        <td className="p-3">{emp.branchName}</td>
-                                                        <td className="p-3 font-semibold text-rose-600">{emp.source || 'Facebook'}</td>
-                                                        <td className="p-3"><span className="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">{emp.status}</span></td>
+                                                        <td className="p-4 font-mono font-black text-lnc-pink">{emp.empCode}</td>
+                                                        <td className="p-4 font-bold text-zinc-900">{emp.name}</td>
+                                                        <td className="p-4">{emp.role}</td>
+                                                        <td className="p-4">{emp.dept}</td>
+                                                        <td className="p-4">{emp.branchName}</td>
+                                                        <td className="p-4 font-semibold text-rose-600">{emp.source || 'Facebook'}</td>
+                                                        <td className="p-4"><span className="bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">{emp.status}</span></td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -589,12 +596,12 @@
 
                             {currentTab === 'training' && (
                                 <div className="space-y-6">
-                                    <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
+                                    <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
                                         <h3 className="font-extrabold text-sm text-zinc-900">📚 มอบหมายหลักสูตรฝึกอบรม (เฉพาะพนักงานทดลองงาน & ผ่านการบรรจุ)</h3>
-                                        <form onSubmit={handleAddTraining} className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+                                        <form onSubmit={handleAddTraining} className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                                             <div>
-                                                <label className="font-bold block mb-1">เลือกรายชื่อพนักงาน *</label>
-                                                <select value={selectedEmpName} onChange={e => setSelectedEmpName(e.target.value)} className="w-full border p-2.5 rounded-xl bg-white" required>
+                                                <label className="font-bold block mb-1.5 text-zinc-700">เลือกรายชื่อพนักงาน *</label>
+                                                <select value={selectedEmpName} onChange={e => setSelectedEmpName(e.target.value)} className="w-full border p-3 rounded-2xl bg-white" required>
                                                     <option value="">-- เลือกพนักงาน --</option>
                                                     {eligibleTrainees.length === 0 ? (
                                                         <option value="" disabled>ยังไม่มีพนักงานในสถานะทดลองงาน/บรรจุ</option>
@@ -608,41 +615,41 @@
                                                 </select>
                                             </div>
                                             <div>
-                                                <label className="font-bold block mb-1">ชื่อหลักสูตรอบรม *</label>
-                                                <input type="text" placeholder="เช่น เทคนิคการสอน Active Learning" value={courseName} onChange={e => setCourseName(e.target.value)} className="w-full border p-2.5 rounded-xl" required />
+                                                <label className="font-bold block mb-1.5 text-zinc-700">ชื่อหลักสูตรอบรม *</label>
+                                                <input type="text" placeholder="เช่น เทคนิคการสอน Active Learning" value={courseName} onChange={e => setCourseName(e.target.value)} className="w-full border p-3 rounded-2xl" required />
                                             </div>
                                             <div>
-                                                <label className="font-bold block mb-1">กำหนดวันที่อบรม *</label>
-                                                <input type="date" value={trainingDate} onChange={e => setTrainingDate(e.target.value)} className="w-full border p-2.5 rounded-xl" required />
+                                                <label className="font-bold block mb-1.5 text-zinc-700">กำหนดวันที่อบรม *</label>
+                                                <input type="date" value={trainingDate} onChange={e => setTrainingDate(e.target.value)} className="w-full border p-3 rounded-2xl" required />
                                             </div>
                                             <div className="flex items-end">
-                                                <button type="submit" className="w-full bg-lnc-pink hover:bg-rose-700 text-white font-bold p-2.5 rounded-xl shadow-md transition">
+                                                <button type="submit" className="w-full bg-lnc-pink hover:bg-rose-700 text-white font-bold p-3 rounded-2xl shadow-md transition">
                                                     บันทึกและมอบหมายอบรม
                                                 </button>
                                             </div>
                                         </form>
                                     </div>
 
-                                    <div className="bg-white rounded-2xl border overflow-hidden shadow-sm">
-                                        <div className="p-4 bg-zinc-100 border-b font-bold text-xs">ประวัติและสถานะการฝึกอบรมพนักงานทั้งหมด</div>
+                                    <div className="bg-white rounded-3xl border border-zinc-200 overflow-hidden shadow-sm">
+                                        <div className="p-4 bg-zinc-100 border-b font-bold text-xs text-zinc-800">ประวัติและสถานะการฝึกอบรมพนักงานทั้งหมด</div>
                                         <table className="w-full text-xs text-left">
                                             <thead className="border-b text-zinc-500 uppercase">
                                                 <tr>
-                                                    <th className="p-3">ชื่อพนักงาน</th>
-                                                    <th className="p-3">หลักสูตรอบรม</th>
-                                                    <th className="p-3">วันที่อบรม</th>
-                                                    <th className="p-3">สถานะ</th>
-                                                    <th className="p-3">คะแนนประเมิน</th>
+                                                    <th className="p-4">ชื่อพนักงาน</th>
+                                                    <th className="p-4">หลักสูตรอบรม</th>
+                                                    <th className="p-4">วันที่อบรม</th>
+                                                    <th className="p-4">สถานะ</th>
+                                                    <th className="p-4">คะแนนประเมิน</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y">
                                                 {trainings.map(tr => (
                                                     <tr key={tr.id} className="hover:bg-zinc-50">
-                                                        <td className="p-3 font-bold text-zinc-900">{tr.empName}</td>
-                                                        <td className="p-3 font-semibold text-lnc-pink">{tr.course}</td>
-                                                        <td className="p-3">{tr.date}</td>
-                                                        <td className="p-3"><span className="px-2 py-0.5 rounded-full font-bold bg-amber-50 text-amber-700 border">{tr.status}</span></td>
-                                                        <td className="p-3 font-mono font-bold">{tr.score}</td>
+                                                        <td className="p-4 font-bold text-zinc-900">{tr.empName}</td>
+                                                        <td className="p-4 font-semibold text-lnc-pink">{tr.course}</td>
+                                                        <td className="p-4">{tr.date}</td>
+                                                        <td className="p-4"><span className="px-2.5 py-1 rounded-full font-bold bg-amber-50 text-amber-700 border border-amber-200">{tr.status}</span></td>
+                                                        <td className="p-4 font-mono font-bold">{tr.score}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -660,6 +667,7 @@
                             onActionClick={(cand) => setActiveStageActionModal(cand)}
                             onConvertToEmployee={handleConvertToEmployee}
                             onDeleteClick={handleDeleteCandidate}
+                            isConverted={employees.some(e => e.name.includes(selectedCandidateDetail.full_name))}
                         />
                     )}
                     {activeStageActionModal && (
@@ -671,7 +679,7 @@
                     )}
 
                     {toast && (
-                        <div className="fixed bottom-6 right-6 bg-zinc-900 text-white px-4 py-3 rounded-xl shadow-2xl text-xs flex items-center space-x-2 border-l-4 border-lnc-pink z-50">
+                        <div className="fixed bottom-6 right-6 bg-zinc-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl text-xs flex items-center space-x-2.5 border-l-4 border-lnc-pink z-50 animate-bounce">
                             <span>{toast}</span>
                         </div>
                     )}
