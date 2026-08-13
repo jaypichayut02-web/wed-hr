@@ -59,6 +59,16 @@
             { id: 'Rejected', title: 'ไม่ผ่านการคัดเลือก', badgeColor: 'bg-rose-50 text-rose-700' }
         ];
 
+        // Helper to get the formal next stage in sequential pipeline
+        function getNextStageId(currentStageId) {
+            const sequence = ['Application', 'Screening', 'Interview', 'Demo Teaching', 'Offer', 'Probation', 'Passed Probation'];
+            const idx = sequence.indexOf(currentStageId);
+            if (idx !== -1 && idx < sequence.length - 1) {
+                return sequence[idx + 1];
+            }
+            return null;
+        }
+
         function Icon({ name, className = "w-4 h-4" }) {
             const icons = {
                 'layout-dashboard': <path d="M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm11 0h7v7h-7z" />,
@@ -73,7 +83,10 @@
                 'user': <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />,
                 'compass': <><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></>,
                 'file-text': <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></>,
-                'external-link': <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+                'external-link': <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />,
+                'arrow-right': <path d="M5 12h14M12 5l7 7-7 7" />,
+                'check-circle': <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>,
+                'shield-check': <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             };
 
             return (
@@ -170,9 +183,13 @@
         function CandidateDetailModal({ candidate, onClose, onQuickMove, onConvertToEmployee, onDeleteClick, isConverted }) {
             if (!candidate) return null;
 
+            const nextStageId = getNextStageId(candidate.stage);
+            const nextStageObj = ATS_STAGES.find(s => s.id === nextStageId);
+
             return (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
                     <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl my-auto overflow-hidden border border-zinc-100">
+                        {/* Header */}
                         <div className="bg-zinc-900 text-white p-6 sm:p-8 flex items-start justify-between">
                             <div>
                                 <div className="flex items-center space-x-2 flex-wrap gap-y-1">
@@ -197,20 +214,61 @@
                             <button onClick={onClose} className="text-zinc-400 hover:text-white font-bold p-2 bg-zinc-800 rounded-xl transition">✕</button>
                         </div>
 
+                        {/* Scrollable Content */}
                         <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar space-y-6 text-xs text-zinc-800 bg-zinc-50/50">
-                            <div className="bg-white p-4 rounded-2xl border border-zinc-200 shadow-xs flex items-center justify-between flex-wrap gap-2">
-                                <span className="font-bold text-zinc-700">เปลี่ยนขั้นตอน ATS ทันที (ข้ามขั้นตอนได้):</span>
-                                <select 
-                                    value={candidate.stage} 
-                                    onChange={(e) => onQuickMove(candidate.id, e.target.value)}
-                                    className="border-2 border-lnc-pink rounded-xl p-2 font-bold text-lnc-pink bg-rose-50/50 focus:outline-none"
-                                >
-                                    {ATS_STAGES.map(s => (
-                                        <option key={s.id} value={s.id}>{s.title}</option>
-                                    ))}
-                                </select>
+                            {/* Formal Action Box */}
+                            <div className="bg-white p-5 rounded-2xl border-2 border-lnc-pink/30 shadow-sm space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-extrabold text-zinc-800 text-xs flex items-center space-x-2">
+                                        <Icon name="shield-check" className="w-4 h-4 text-lnc-pink" />
+                                        <span>การพิจารณาผู้สมัคร & เลื่อนขั้นตอนทางการ:</span>
+                                    </span>
+                                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-zinc-100 text-zinc-700 border">
+                                        สถานะปัจจุบัน: {ATS_STAGES.find(s => s.id === candidate.stage)?.title || candidate.stage}
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center space-x-2 flex-wrap gap-2 pt-1">
+                                    {nextStageObj && (
+                                        <button 
+                                            onClick={() => onQuickMove(candidate.id, nextStageObj.id)}
+                                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl shadow-sm transition flex items-center space-x-2"
+                                        >
+                                            <Icon name="check-circle" className="w-4 h-4" />
+                                            <span>✅ อนุมัติผ่าน ➔ เลื่อนไป "{nextStageObj.title}"</span>
+                                        </button>
+                                    )}
+
+                                    <button 
+                                        onClick={() => onQuickMove(candidate.id, 'Backup Pool')}
+                                        className="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3.5 py-2.5 rounded-xl transition"
+                                    >
+                                        📁 ย้ายไป "ตัวสำรอง (Backup Pool)"
+                                    </button>
+
+                                    <button 
+                                        onClick={() => onQuickMove(candidate.id, 'Rejected')}
+                                        className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-3.5 py-2.5 rounded-xl border border-rose-200 transition"
+                                    >
+                                        ❌ ปฏิเสธ / ไม่ผ่านการคัดเลือก
+                                    </button>
+                                </div>
+
+                                <div className="pt-2 border-t flex items-center justify-between text-[11px] text-zinc-500">
+                                    <span>ย้ายข้ามขั้นตอนอิสระ:</span>
+                                    <select 
+                                        value={candidate.stage} 
+                                        onChange={(e) => onQuickMove(candidate.id, e.target.value)}
+                                        className="border rounded-lg p-1.5 font-bold text-zinc-800 bg-zinc-50 focus:outline-none"
+                                    >
+                                        {ATS_STAGES.map(s => (
+                                            <option key={s.id} value={s.id}>{s.title}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
+                            {/* Section 1: Personal Info */}
                             <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-2 flex items-center space-x-2">
                                     <Icon name="user" className="w-4 h-4 text-lnc-pink" />
@@ -228,6 +286,7 @@
                                 </div>
                             </div>
 
+                            {/* Section 2: Source Tracking */}
                             <div className="bg-rose-50/60 p-5 rounded-2xl border border-rose-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b border-rose-200 pb-2 flex items-center space-x-2">
                                     <Icon name="compass" className="w-4 h-4 text-lnc-pink" />
@@ -239,6 +298,7 @@
                                 </div>
                             </div>
 
+                            {/* Section 3: Qualifications */}
                             <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-2 flex items-center space-x-2">
                                     <Icon name="book-open" className="w-4 h-4 text-lnc-pink" />
@@ -252,6 +312,7 @@
                                 </div>
                             </div>
 
+                            {/* Resume Attached File */}
                             <div className="p-4 bg-zinc-900 text-white rounded-2xl flex items-center justify-between shadow-md">
                                 <div className="flex items-center space-x-3">
                                     <div className="p-2.5 bg-lnc-pink text-white rounded-xl">
@@ -273,6 +334,7 @@
                             </div>
                         </div>
 
+                        {/* Modal Footer */}
                         <div className="p-5 bg-white border-t flex items-center justify-between shrink-0">
                             <button onClick={() => onDeleteClick(candidate.id)} className="text-rose-600 hover:text-rose-800 text-xs font-bold px-4 py-2.5 rounded-xl border border-rose-200 hover:bg-rose-50 transition flex items-center space-x-1">
                                 <span>🗑️ ลบใบสมัคร</span>
@@ -410,7 +472,7 @@
                 handleSaveQuotas(updated);
             };
 
-            // Safe filtered candidates
+            // Safe filtered candidates by date
             const filteredCandidates = React.useMemo(() => {
                 if (!Array.isArray(candidates)) return [];
                 return candidates.filter(c => {
@@ -422,12 +484,14 @@
                 });
             }, [candidates, startDateFilter, endDateFilter]);
 
+            // Quick/Formal move candidate stage
             const handleQuickMoveStage = async (candId, newStage) => {
                 setCandidates(candidates.map(c => c.id === candId ? { ...c, stage: newStage } : c));
                 if (selectedCandidateDetail && selectedCandidateDetail.id === candId) {
                     setSelectedCandidateDetail({ ...selectedCandidateDetail, stage: newStage });
                 }
-                showToast(`ย้ายผู้สมัครไปยังขั้นตอน "${newStage}" เรียบร้อยแล้ว`);
+                const stageTitle = ATS_STAGES.find(s => s.id === newStage)?.title || newStage;
+                showToast(`อนุมัติย้ายผู้สมัครไปยังขั้นตอน "${stageTitle}" เรียบร้อยแล้ว`);
 
                 if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) {
                     try {
@@ -462,7 +526,7 @@
                 setEmployees([newEmp, ...employees]);
                 handleQuickMoveStage(cand.id, 'Passed Probation');
                 setSelectedCandidateDetail(null);
-                showToast(`🎉 บรรจุคุณ ${cand.full_name} เป็นพนักงานประจำสำเร็จ! รหัสพนักงาน: [${random10Digit}]`);
+                showToast(`🎉 บรรจุคุณ ${cand.full_name} เป็นพนักงานประจำสำเร็จ! รหัสพนักงาน 10 หลัก: [${random10Digit}]`);
             };
 
             const handleDeleteCandidate = async (candId) => {
@@ -537,13 +601,13 @@
                         </div>
                     </aside>
 
-                    {/* Main Content */}
+                    {/* Main Container */}
                     <main className="flex-1 flex flex-col overflow-hidden">
                         <header className="bg-white border-b px-8 py-4 flex items-center justify-between shadow-xs">
                             <h2 className="text-base font-bold text-zinc-900">
-                                {currentTab === 'dashboard' && 'HR Executive Dashboard, Date Range & Position Capacity Tracking'}
-                                {currentTab === 'ats' && 'Recruitment ATS Pipeline (ยืดหยุ่น ย้ายขั้นตอนได้ทันที)'}
-                                {currentTab === 'employees' && 'คลังข้อมูลพนักงานประจำ (รหัส 10 หลักอัตโนมัติ)'}
+                                {currentTab === 'dashboard' && 'HR Executive Dashboard & Position Headcount Capacity Tracking'}
+                                {currentTab === 'ats' && 'Recruitment ATS Pipeline (ระบบคัดเลือกผู้สมัครเป็นทางการ)'}
+                                {currentTab === 'employees' && 'คลังข้อมูลพนักงานประจำ (ออกรหัส 10 หลักอัตโนมัติ)'}
                                 {currentTab === 'training' && 'ระบบติดตามการฝึกอบรมพนักงาน (Probation & Official Staff)'}
                                 {currentTab === 'settings' && 'การตั้งค่าเป้าหมายและโควตาอัตรากำลังคน (Position Quota Settings)'}
                             </h2>
@@ -582,36 +646,62 @@
                                     {/* Position Capacity & Headcount Tracking */}
                                     <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
                                         <div className="flex justify-between items-center">
-                                            <h3 className="font-extrabold text-sm text-zinc-900">📈 อัตรากำลังคน & อัตราตำแหน่งที่เปิดรับ (Position Capacity & Headcount Tracking)</h3>
+                                            <div>
+                                                <h3 className="font-extrabold text-sm text-zinc-900">📈 อัตรากำลังคน & อัตราตำแหน่งที่เปิดรับ (Position Headcount & Capacity Tracking)</h3>
+                                                <p className="text-[11px] text-zinc-500 mt-0.5">นับรวมผู้สมัครที่อยู่ในสถานะ "ทดลองงาน (Probation)" และ "ผ่านการบรรจุ (Passed)" เข้าโควตาทันที</p>
+                                            </div>
                                             <button onClick={() => setCurrentTab('settings')} className="text-xs text-lnc-pink font-bold hover:underline">⚙️ ปรับแต่งตั้งค่าโควตา</button>
                                         </div>
+
                                         {jobQuotas.length === 0 ? (
                                             <p className="text-xs text-zinc-400 py-4 text-center">ยังไม่มีข้อมูลตำแหน่งงาน กรุณาเพิ่มโควตาที่เมนู "ตั้งค่าโควตาตำแหน่งงาน"</p>
                                         ) : (
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
                                                 {jobQuotas.map(jq => {
                                                     if (!jq) return null;
                                                     const jqTitle = String(jq.title || '');
                                                     const targetQuotaNum = Number(jq.targetQuota) || 1;
-                                                    const filledCount = filteredCandidates.filter(c => {
+                                                    
+                                                    const probationCount = filteredCandidates.filter(c => {
                                                         if (!c || !c.job_title) return false;
                                                         const cJobTitle = String(c.job_title);
                                                         const baseJobTitle = jqTitle.split(' - ')[0] || jqTitle;
-                                                        const isMatchingJob = baseJobTitle ? cJobTitle.toLowerCase().includes(baseJobTitle.toLowerCase()) : false;
-                                                        const isPassedOrProbation = c.stage === 'Probation' || c.stage === 'Passed Probation';
-                                                        return isMatchingJob && isPassedOrProbation;
+                                                        return cJobTitle.toLowerCase().includes(baseJobTitle.toLowerCase()) && c.stage === 'Probation';
                                                     }).length;
-                                                    const pct = targetQuotaNum > 0 ? Math.round((filledCount / targetQuotaNum) * 100) : 0;
+
+                                                    const passedCount = filteredCandidates.filter(c => {
+                                                        if (!c || !c.job_title) return false;
+                                                        const cJobTitle = String(c.job_title);
+                                                        const baseJobTitle = jqTitle.split(' - ')[0] || jqTitle;
+                                                        return cJobTitle.toLowerCase().includes(baseJobTitle.toLowerCase()) && c.stage === 'Passed Probation';
+                                                    }).length;
+
+                                                    const totalFilled = probationCount + passedCount;
+                                                    const pct = Math.round((totalFilled / targetQuotaNum) * 100);
+                                                    const remaining = Math.max(0, targetQuotaNum - totalFilled);
+
                                                     return (
-                                                        <div key={jq.id || Math.random()} className="p-4 bg-zinc-50 rounded-2xl border border-zinc-200 space-y-2">
-                                                            <div className="flex justify-between font-bold">
-                                                                <span className="text-zinc-800">{jqTitle || 'ไม่ระบุตำแหน่ง'}</span>
-                                                                <span className="text-lnc-pink">{filledCount} / {targetQuotaNum} คน</span>
+                                                        <div key={jq.id || Math.random()} className="p-5 bg-zinc-50 rounded-2xl border border-zinc-200 space-y-3 shadow-xs">
+                                                            <div className="flex justify-between items-start font-bold">
+                                                                <div>
+                                                                    <h4 className="text-zinc-900 text-sm">{jqTitle || 'ไม่ระบุตำแหน่ง'}</h4>
+                                                                    <span className="text-[10px] text-zinc-500 font-normal">โควตาเป้าหมาย: {targetQuotaNum} อัตรา</span>
+                                                                </div>
+                                                                <span className="text-sm font-black text-lnc-pink font-mono bg-white px-2.5 py-1 rounded-xl border border-rose-100">
+                                                                    {totalFilled} / {targetQuotaNum} คน
+                                                                </span>
                                                             </div>
-                                                            <div className="w-full bg-zinc-200 h-2.5 rounded-full overflow-hidden">
-                                                                <div className="bg-emerald-600 h-full rounded-full transition-all" style={{ width: `${Math.min(pct, 100)}%` }}></div>
+
+                                                            <div className="w-full bg-zinc-200 h-3 rounded-full overflow-hidden flex">
+                                                                <div className="bg-amber-500 h-full transition-all" style={{ width: `${Math.min((probationCount / targetQuotaNum) * 100, 100)}%` }} title={`ทดลองงาน: ${probationCount} คน`}></div>
+                                                                <div className="bg-emerald-600 h-full transition-all" style={{ width: `${Math.min((passedCount / targetQuotaNum) * 100, 100)}%` }} title={`บรรจุแล้ว: ${passedCount} คน`}></div>
                                                             </div>
-                                                            <p className="text-[10px] text-zinc-400">เป้าหมายรับ: {targetQuotaNum} อัตรา</p>
+
+                                                            <div className="flex justify-between items-center text-[10px] pt-1">
+                                                                <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">🟡 ทดลองงาน: {probationCount} คน</span>
+                                                                <span className="text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">🟢 บรรจุแล้ว: {passedCount} คน</span>
+                                                                <span className="font-extrabold text-zinc-600 bg-white px-2 py-0.5 rounded border">คงเหลือรับได้: {remaining} คน</span>
+                                                            </div>
                                                         </div>
                                                     );
                                                 })}
@@ -619,6 +709,7 @@
                                         )}
                                     </div>
 
+                                    {/* Source Quality Analytics */}
                                     <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-sm space-y-5">
                                         <h3 className="font-extrabold text-sm text-zinc-900">📊 วิเคราะห์ช่องทางแหล่งที่มาผู้สมัคร และอัตราผ่าน (Source Quality Analytics)</h3>
                                         <div className="space-y-4">
@@ -641,14 +732,16 @@
                                 </div>
                             )}
 
+                            {/* ATS Pipeline View */}
                             {currentTab === 'ats' && (
                                 <div className="space-y-5">
                                     <div className="bg-zinc-900 text-white p-6 rounded-3xl shadow-sm flex items-center justify-between">
                                         <div>
-                                            <h3 className="font-bold text-sm">บอร์ดคัดเลือกผู้สมัคร (ATS Pipeline - ยืดหยุ่น ย้ายขั้นตอนได้ทันที)</h3>
-                                            <p className="text-xs text-zinc-400 mt-1">คลิกเลือกย้ายขั้นตอน หรือกดดูประวัติเต็มรูปแบบได้อย่างสบายตา</p>
+                                            <h3 className="font-bold text-sm">บอร์ดคัดเลือกผู้สมัคร (ATS Pipeline - ระบบพิจารณาทางการ)</h3>
+                                            <p className="text-xs text-zinc-400 mt-1">กดอนุมัติเลื่อนขั้นผู้สมัครเป็นทางการ หรือเปลี่ยนขั้นตอนได้อย่างยืดหยุ่น</p>
                                         </div>
                                     </div>
+
                                     {filteredCandidates.length === 0 ? (
                                         <div className="bg-white p-12 rounded-3xl text-center border border-zinc-200 text-zinc-400 text-xs">
                                             ยังไม่มีข้อมูลผู้สมัครในระบบ Google Sheets
@@ -657,15 +750,19 @@
                                         <div className="grid grid-cols-1 md:grid-cols-9 gap-3 overflow-x-auto pb-4 custom-scrollbar">
                                             {ATS_STAGES.map(stage => {
                                                 const stageCandidates = filteredCandidates.filter(c => c.stage === stage.id);
+                                                const nextStageId = getNextStageId(stage.id);
+                                                const nextStageObj = ATS_STAGES.find(s => s.id === nextStageId);
+
                                                 return (
-                                                    <div key={stage.id} className="p-3.5 rounded-2xl border min-w-[210px] flex flex-col h-[600px] bg-zinc-100/70 border-zinc-200">
+                                                    <div key={stage.id} className="p-3.5 rounded-2xl border min-w-[220px] flex flex-col h-[620px] bg-zinc-100/70 border-zinc-200">
                                                         <div className="flex items-center justify-between pb-2 mb-2 border-b">
                                                             <h4 className="text-[11px] font-extrabold text-zinc-800 uppercase">{stage.title}</h4>
                                                             <span className="text-[10px] bg-zinc-200 text-zinc-800 font-bold px-2 py-0.5 rounded-full">{stageCandidates.length}</span>
                                                         </div>
+
                                                         <div className="space-y-2.5 flex-1 overflow-y-auto custom-scrollbar pr-1">
                                                             {stageCandidates.map(c => (
-                                                                <div key={c.id} className="bg-white p-3.5 rounded-2xl border border-zinc-200 shadow-xs space-y-2">
+                                                                <div key={c.id} className="bg-white p-3.5 rounded-2xl border border-zinc-200 shadow-xs space-y-2.5 hover:shadow-md transition">
                                                                     <div className="flex justify-between text-[9px]">
                                                                         <span className="font-bold text-lnc-pink bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-100">{c.source || 'Facebook'}</span>
                                                                         <span className="text-zinc-400">{c.created_at || 'ล่าสุด'}</span>
@@ -674,16 +771,30 @@
                                                                         <h5 className="font-bold text-xs text-zinc-900">{c.full_name} {c.nickname ? `(${c.nickname})` : ''}</h5>
                                                                         <p className="text-[10px] text-zinc-500 line-clamp-1 mt-0.5">{c.job_title}</p>
                                                                     </div>
-                                                                    <div className="pt-1 flex flex-col space-y-1">
-                                                                        <select 
-                                                                            value={c.stage} 
-                                                                            onChange={(e) => handleQuickMoveStage(c.id, e.target.value)}
-                                                                            className="w-full text-[10px] border rounded-lg p-1 font-bold bg-zinc-50 text-zinc-800 focus:outline-none"
-                                                                        >
-                                                                            {ATS_STAGES.map(s => (
-                                                                                <option key={s.id} value={s.id}>{s.title}</option>
-                                                                            ))}
-                                                                        </select>
+
+                                                                    {/* Formal Action Buttons */}
+                                                                    <div className="pt-1 flex flex-col space-y-1.5">
+                                                                        {nextStageObj && (
+                                                                            <button 
+                                                                                onClick={() => handleQuickMoveStage(c.id, nextStageObj.id)}
+                                                                                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold py-1.5 rounded-lg transition flex items-center justify-center space-x-1 shadow-2xs"
+                                                                            >
+                                                                                <span>อนุมัติ ➔ {nextStageObj.title.split('.')[1] || nextStageObj.title}</span>
+                                                                            </button>
+                                                                        )}
+
+                                                                        <div className="grid grid-cols-2 gap-1">
+                                                                            <select 
+                                                                                value={c.stage} 
+                                                                                onChange={(e) => handleQuickMoveStage(c.id, e.target.value)}
+                                                                                className="text-[9px] border rounded-lg p-1 font-bold bg-zinc-50 text-zinc-800 focus:outline-none col-span-2"
+                                                                            >
+                                                                                {ATS_STAGES.map(s => (
+                                                                                    <option key={s.id} value={s.id}>{s.title}</option>
+                                                                                ))}
+                                                                            </select>
+                                                                        </div>
+
                                                                         <button onClick={() => setSelectedCandidateDetail(c)} className="w-full bg-zinc-900 hover:bg-black text-white text-[10px] py-1.5 rounded-lg font-bold transition">
                                                                             ดูประวัติเต็ม ➔
                                                                         </button>
@@ -699,6 +810,7 @@
                                 </div>
                             )}
 
+                            {/* Official Employee Directory */}
                             {currentTab === 'employees' && (
                                 <div className="space-y-5">
                                     <div className="bg-zinc-900 text-white p-6 rounded-3xl flex justify-between items-center shadow-sm">
@@ -744,6 +856,7 @@
                                 </div>
                             )}
 
+                            {/* Training Tracker */}
                             {currentTab === 'training' && (
                                 <div className="space-y-6">
                                     <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
@@ -812,6 +925,7 @@
                                 </div>
                             )}
 
+                            {/* Job Quota Settings */}
                             {currentTab === 'settings' && (
                                 <div className="space-y-6">
                                     <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
@@ -872,6 +986,7 @@
                         </div>
                     </main>
 
+                    {/* Candidate Detail Modal */}
                     {selectedCandidateDetail && (
                         <CandidateDetailModal 
                             candidate={selectedCandidateDetail} 
@@ -883,6 +998,7 @@
                         />
                     )}
 
+                    {/* Toast Notification */}
                     {toast && (
                         <div className="fixed bottom-6 right-6 bg-zinc-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl text-xs flex items-center space-x-2.5 border-l-4 border-lnc-pink z-50 animate-bounce">
                             <span>{toast}</span>
