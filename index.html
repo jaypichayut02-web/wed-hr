@@ -46,7 +46,7 @@
         // ------------------------------------------------------------------------
         // 🔑 นำ Web App URL ของคุณมาวางแทนที่ข้อความด้านล่างนี้ให้ถูกต้อง
         // ------------------------------------------------------------------------
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRNSQbiLj75jmV7Ny1qA9KmELiFupn2f84T2uAUCL91OlkqUf4-fOspZZSMCs29EIqfw/exec";
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwRoa93ZS00tDvZRHpdA-iNaLuVbzx2i0VdxzH94zuC4zKb4K-zoagW5YHVAShAV1afwg/exec";
         // ------------------------------------------------------------------------
 
         const ATS_STAGES = [
@@ -109,7 +109,6 @@
             return (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
                     <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl my-auto overflow-hidden border border-zinc-100">
-                        {/* Header */}
                         <div className="bg-zinc-900 text-white p-6 sm:p-8 flex items-start justify-between">
                             <div>
                                 <div className="flex items-center space-x-2 flex-wrap gap-y-1">
@@ -134,9 +133,7 @@
                             <button onClick={onClose} className="text-zinc-400 hover:text-white font-bold p-2 bg-zinc-800 rounded-xl transition">✕</button>
                         </div>
 
-                        {/* Scrollable Body */}
                         <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar space-y-6 text-xs text-zinc-800 bg-zinc-50/50">
-                            {/* Quick Stage Selector */}
                             <div className="bg-white p-4 rounded-2xl border border-zinc-200 shadow-xs flex items-center justify-between flex-wrap gap-2">
                                 <span className="font-bold text-zinc-700">เปลี่ยนขั้นตอน ATS ทันที (ข้ามขั้นตอนได้):</span>
                                 <select 
@@ -150,7 +147,6 @@
                                 </select>
                             </div>
 
-                            {/* Section 1: Personal Info */}
                             <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-2 flex items-center space-x-2">
                                     <i data-lucide="user" className="w-4 h-4 text-lnc-pink"></i>
@@ -168,7 +164,6 @@
                                 </div>
                             </div>
 
-                            {/* Section 2: Source Tracking */}
                             <div className="bg-rose-50/60 p-5 rounded-2xl border border-rose-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b border-rose-200 pb-2 flex items-center space-x-2">
                                     <i data-lucide="compass" className="w-4 h-4 text-lnc-pink"></i>
@@ -180,7 +175,6 @@
                                 </div>
                             </div>
 
-                            {/* Section 3: Teaching & Branch */}
                             <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-2 flex items-center space-x-2">
                                     <i data-lucide="book-open" className="w-4 h-4 text-lnc-pink"></i>
@@ -194,7 +188,6 @@
                                 </div>
                             </div>
 
-                            {/* Document Viewer */}
                             <div className="p-4 bg-zinc-900 text-white rounded-2xl flex items-center justify-between shadow-md">
                                 <div className="flex items-center space-x-3">
                                     <div className="p-2.5 bg-lnc-pink text-white rounded-xl">
@@ -216,7 +209,6 @@
                             </div>
                         </div>
 
-                        {/* Footer Action Bar */}
                         <div className="p-5 bg-white border-t flex items-center justify-between shrink-0">
                             <button onClick={() => onDeleteClick(candidate.id)} className="text-rose-600 hover:text-rose-800 text-xs font-bold px-4 py-2.5 rounded-xl border border-rose-200 hover:bg-rose-50 transition flex items-center space-x-1">
                                 <span>🗑️ ลบใบสมัคร</span>
@@ -279,7 +271,9 @@
                     const text = await res.text();
                     let data = JSON.parse(text);
 
-                    if (data && Array.isArray(data.candidates)) {
+                    if (data && data.error) {
+                        showToast(`❌ Google Apps Script แจ้งข้อผิดพลาด: ${data.error}`);
+                    } else if (data && Array.isArray(data.candidates)) {
                         setCandidates(data.candidates);
                         if (Array.isArray(data.quotas)) {
                             setJobQuotas(data.quotas);
@@ -823,5 +817,3 @@
     </script>
 </body>
 </html>
-```
-eof
