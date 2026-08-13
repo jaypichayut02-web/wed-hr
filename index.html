@@ -45,7 +45,13 @@
     <div id="root"></div>
 
     <script data-cfasync="false" type="text/babel" data-presets="react" data-type="module">
-        /* STREAMING_CHUNK:Defining Mock Data and Initial Constants... */
+        // ------------------------------------------------------------------------
+        // 🔑 ใส่ Supabase URL และ Anon Key ของคุณตรงนี้เพื่อใช้งานชั่วคราวได้เลย
+        // ------------------------------------------------------------------------
+        const SUPABASE_URL = "";  // เช่น "https://bxewjkhvguphfcuiwpjg.supabase.co"
+        const SUPABASE_KEY = "";  // เช่น "sb_publishable_64TozLYNslnv0Ub8951hFg_dwQy2T_A"
+        // ------------------------------------------------------------------------
+
         const INITIAL_BRANCHES = [
             { id: 'b1', name: 'Happitat บางนา (ชั้น 5)' },
             { id: 'b2', name: 'เดอะไบรท์ พระราม 2' },
@@ -172,7 +178,6 @@
             }
         ];
 
-        /* STREAMING_CHUNK:Defining Shared UI Components... */
         function NavItem({ icon, label, badge, active, onClick }) {
             return (
                 <button
@@ -215,7 +220,6 @@
             );
         }
 
-        /* STREAMING_CHUNK:Defining Modals... */
         function CandidateDetailModal({ candidate, onClose, onUpdateStage }) {
             return (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -386,7 +390,6 @@
             );
         }
 
-        /* STREAMING_CHUNK:Defining Main Views... */
         function DashboardView({ candidates, employees, developments, trainings, jobs, setSelectedCandidateDetail }) {
             const probationStaff = candidates.filter(c => c.stage === 'Probation');
 
@@ -433,16 +436,16 @@
             );
         }
 
-        function RecruitmentView({ candidates, setCandidates, setActiveDemoModal, setSelectedCandidateDetail, showToast, supabaseUrl, supabaseKey }) {
+        function RecruitmentView({ candidates, setCandidates, setActiveDemoModal, setSelectedCandidateDetail, showToast }) {
             const stages = ['Application', 'Screening', 'Interview', 'Demo Teaching', 'Backup Pool', 'Offer', 'Probation', 'Passed Probation'];
 
             const handleStageMove = async (candId, newStage) => {
                 setCandidates(candidates.map(c => c.id === candId ? { ...c, stage: newStage } : c));
                 showToast(`ย้าย Candidate ไปยังขั้นตอน "${newStage}" เรียบร้อยแล้ว`);
 
-                if (supabaseUrl && supabaseKey && window.supabase) {
+                if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
                     try {
-                        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                         await supabase.from('candidates').update({ stage: newStage }).eq('id', candId);
                     } catch (e) {
                         console.error(e);
@@ -616,14 +619,9 @@
             );
         }
 
-        /* STREAMING_CHUNK:Main App Entry Component... */
         function App() {
             const [currentTab, setCurrentTab] = React.useState('dashboard');
             const [selectedBranch, setSelectedBranch] = React.useState('ALL');
-            
-            const [supabaseUrl, setSupabaseUrl] = React.useState(localStorage.getItem('lnc_sp_url') || '');
-            const [supabaseKey, setSupabaseKey] = React.useState(localStorage.getItem('lnc_sp_key') || '');
-            const [showConfigModal, setShowConfigModal] = React.useState(false);
             const [isDbConnected, setIsDbConnected] = React.useState(false);
 
             const [candidates, setCandidates] = React.useState(INITIAL_CANDIDATES);
@@ -645,9 +643,9 @@
             };
 
             const fetchFromSupabase = React.useCallback(async () => {
-                if (!supabaseUrl || !supabaseKey || !window.supabase) return;
+                if (!SUPABASE_URL || !SUPABASE_KEY || !window.supabase) return;
                 try {
-                    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     const { data: candData, error: candErr } = await supabase.from('candidates').select('*').order('created_at', { ascending: false });
                     if (!candErr && candData && candData.length > 0) {
                         const mappedCands = candData.map(c => ({
@@ -671,7 +669,7 @@
                 } catch (err) {
                     console.error('Supabase fetch error:', err);
                 }
-            }, [supabaseUrl, supabaseKey]);
+            }, []);
 
             React.useEffect(() => {
                 fetchFromSupabase();
@@ -682,15 +680,6 @@
                     window.lucide.createIcons();
                 }
             });
-
-            const handleSaveConfig = (e) => {
-                e.preventDefault();
-                localStorage.setItem('lnc_sp_url', supabaseUrl);
-                localStorage.setItem('lnc_sp_key', supabaseKey);
-                setShowConfigModal(false);
-                fetchFromSupabase();
-                showToast('บันทึกการเชื่อมต่อ Supabase เรียบร้อยแล้ว');
-            };
 
             const filterByBranch = (item) => {
                 if (selectedBranch === 'ALL') return true;
@@ -762,10 +751,6 @@
                             </div>
 
                             <div className="flex items-center space-x-2">
-                                <button onClick={() => setShowConfigModal(true)} className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border text-xs font-semibold px-3 py-2 rounded-lg flex items-center space-x-1 transition shadow-sm">
-                                    <i data-lucide="database" className="w-4 h-4 text-lnc-pink"></i>
-                                    <span>⚙️ ตั้งค่า Supabase DB</span>
-                                </button>
                                 <button onClick={() => setActiveJobModal(true)} className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center space-x-1 transition shadow-sm">
                                     <i data-lucide="plus" className="w-4 h-4"></i>
                                     <span>เปิดตำแหน่งงานใหม่</span>
@@ -792,8 +777,6 @@
                                     setActiveDemoModal={setActiveDemoModal}
                                     setSelectedCandidateDetail={setSelectedCandidateDetail}
                                     showToast={showToast}
-                                    supabaseUrl={supabaseUrl}
-                                    supabaseKey={supabaseKey}
                                 />
                             )}
 
@@ -810,35 +793,6 @@
                             )}
                         </div>
                     </main>
-
-                    {/* Supabase Config Modal */}
-                    {showConfigModal && (
-                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                            <form onSubmit={handleSaveConfig} className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-                                <div className="flex items-start justify-between border-b pb-3">
-                                    <div>
-                                        <h3 className="font-bold text-base text-zinc-900">เชื่อมต่อ Supabase Database</h3>
-                                        <p className="text-xs text-zinc-500">ใส่ Supabase URL และ Key สำหรับใช้งานฐานข้อมูลจริง</p>
-                                    </div>
-                                    <button type="button" onClick={() => setShowConfigModal(false)} className="text-zinc-400 font-bold">✕</button>
-                                </div>
-                                <div className="space-y-3 text-xs">
-                                    <div>
-                                        <label className="font-bold block mb-1">Supabase URL</label>
-                                        <input type="url" placeholder="https://xyzcompany.supabase.co" value={supabaseUrl} onChange={e => setSupabaseUrl(e.target.value)} className="w-full border p-2 rounded-lg font-mono text-[11px]" required />
-                                    </div>
-                                    <div>
-                                        <label className="font-bold block mb-1">Supabase Anon Key</label>
-                                        <input type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." value={supabaseKey} onChange={e => setSupabaseKey(e.target.value)} className="w-full border p-2 rounded-lg font-mono text-[11px]" required />
-                                    </div>
-                                </div>
-                                <div className="flex justify-end space-x-2 pt-2 border-t">
-                                    <button type="button" onClick={() => setShowConfigModal(false)} className="px-3 py-2 border rounded-lg text-xs font-semibold">ยกเลิก</button>
-                                    <button type="submit" className="px-4 py-2 bg-lnc-pink text-white rounded-lg text-xs font-bold hover:bg-rose-700">บันทึก & เชื่อมต่อ</button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
 
                     {/* Toast Notification */}
                     {toast && (
