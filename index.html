@@ -7,8 +7,6 @@
 
     <!-- Tailwind CSS -->
     <script data-cfasync="false" src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons UMD -->
-    <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
     <!-- React & ReactDOM 18 UMD -->
     <script data-cfasync="false" src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script data-cfasync="false" src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -61,6 +59,73 @@
             { id: 'Rejected', title: 'ไม่ผ่านการคัดเลือก', badgeColor: 'bg-rose-50 text-rose-700' }
         ];
 
+        function Icon({ name, className = "w-4 h-4" }) {
+            const icons = {
+                'layout-dashboard': <path d="M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm11 0h7v7h-7z" />,
+                'users': <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm14 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />,
+                'user-check': <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8 0 2 2 4-4" />,
+                'book-open': <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zm22 0h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />,
+                'settings': <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm7.4 1.5a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />,
+                'refresh-cw': <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16" />,
+                'calendar': <path d="M19 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM16 2v4M8 2v4M3 10h18" />,
+                'clock': <><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></>,
+                'book': <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z" />,
+                'user': <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />,
+                'compass': <><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></>,
+                'file-text': <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></>,
+                'external-link': <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+            };
+
+            return (
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    className={className}
+                >
+                    {icons[name] || <circle cx="12" cy="12" r="10" />}
+                </svg>
+            );
+        }
+
+        class ErrorBoundary extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { hasError: false, error: null };
+            }
+            static getDerivedStateFromError(error) {
+                return { hasError: true, error };
+            }
+            componentDidCatch(error, errorInfo) {
+                console.error("ErrorBoundary caught error:", error, errorInfo);
+            }
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div className="min-h-screen flex items-center justify-center bg-zinc-100 p-6 text-center">
+                            <div className="bg-white p-8 rounded-3xl border shadow-xl max-w-md w-full space-y-4">
+                                <div className="text-rose-600 font-black text-xl">⚠️ พบข้อผิดพลาดในการแสดงผล</div>
+                                <p className="text-xs text-zinc-500 font-mono bg-zinc-50 p-3 rounded-xl text-left overflow-auto max-h-32">
+                                    {this.state.error ? this.state.error.toString() : 'Unknown Error'}
+                                </p>
+                                <button 
+                                    onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload(); }}
+                                    className="w-full bg-lnc-pink hover:bg-rose-700 text-white text-xs font-bold py-3 rounded-xl shadow-md transition"
+                                >
+                                    🔄 รีโหลดหน้าเว็บใหม่
+                                </button>
+                            </div>
+                        </div>
+                    );
+                }
+                return this.props.children;
+            }
+        }
+
         function NavItem({ icon, label, badge, active, onClick }) {
             return (
                 <button
@@ -72,7 +137,7 @@
                     }`}
                 >
                     <div className="flex items-center space-x-2.5">
-                        <i data-lucide={icon} className={`w-4 h-4 ${active ? 'text-white' : 'text-zinc-400'}`}></i>
+                        <Icon name={icon} className={`w-4 h-4 ${active ? 'text-white' : 'text-zinc-400'}`} />
                         <span>{label}</span>
                     </div>
                     {badge !== undefined && (
@@ -86,19 +151,18 @@
             );
         }
 
-        function StatCard({ title, value, icon, subtitle, color }) {
+        function StatCard({ title, value, icon, color }) {
             return (
                 <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-sm space-y-2">
                     <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{title}</span>
                         <div className={`p-2 rounded-xl bg-zinc-50 ${color}`}>
-                            <i data-lucide={icon} className="w-5 h-5"></i>
+                            <Icon name={icon} className="w-5 h-5" />
                         </div>
                     </div>
                     <div className="flex items-baseline space-x-2">
                         <span className="text-3xl font-black text-zinc-900">{value}</span>
                     </div>
-                    {subtitle && <p className="text-[11px] text-zinc-400 leading-tight">{subtitle}</p>}
                 </div>
             );
         }
@@ -149,7 +213,7 @@
 
                             <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-2 flex items-center space-x-2">
-                                    <i data-lucide="user" className="w-4 h-4 text-lnc-pink"></i>
+                                    <Icon name="user" className="w-4 h-4 text-lnc-pink" />
                                     <span>1. ข้อมูลส่วนตัวและการติดต่อ</span>
                                 </h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -166,7 +230,7 @@
 
                             <div className="bg-rose-50/60 p-5 rounded-2xl border border-rose-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b border-rose-200 pb-2 flex items-center space-x-2">
-                                    <i data-lucide="compass" className="w-4 h-4 text-lnc-pink"></i>
+                                    <Icon name="compass" className="w-4 h-4 text-lnc-pink" />
                                     <span>2. แหล่งที่มาการสมัครงาน & ผู้แนะนำ (Source Tracking)</span>
                                 </h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -177,7 +241,7 @@
 
                             <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-2 flex items-center space-x-2">
-                                    <i data-lucide="book-open" className="w-4 h-4 text-lnc-pink"></i>
+                                    <Icon name="book-open" className="w-4 h-4 text-lnc-pink" />
                                     <span>3. คุณสมบัติการสอนและสาขา</span>
                                 </h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -191,7 +255,7 @@
                             <div className="p-4 bg-zinc-900 text-white rounded-2xl flex items-center justify-between shadow-md">
                                 <div className="flex items-center space-x-3">
                                     <div className="p-2.5 bg-lnc-pink text-white rounded-xl">
-                                        <i data-lucide="file-text" className="w-5 h-5"></i>
+                                        <Icon name="file-text" className="w-5 h-5" />
                                     </div>
                                     <div>
                                         <h5 className="font-bold text-xs">เอกสาร Resume / Portfolio / Google Drive</h5>
@@ -201,7 +265,7 @@
                                 {candidate.resume_url ? (
                                     <a href={candidate.resume_url} target="_blank" rel="noreferrer" className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center space-x-1.5 transition shadow-sm">
                                         <span>เปิดดูเอกสาร</span>
-                                        <i data-lucide="external-link" className="w-3.5 h-3.5"></i>
+                                        <Icon name="external-link" className="w-3.5 h-3.5" />
                                     </a>
                                 ) : (
                                     <span className="text-xs text-zinc-400 italic">ไม่มีไฟล์แนบ</span>
@@ -224,7 +288,7 @@
                                                 : 'bg-emerald-600 hover:bg-emerald-700 text-white'
                                         }`}
                                     >
-                                        <i data-lucide="user-check" className="w-4 h-4"></i>
+                                        <Icon name="user-check" className="w-4 h-4" />
                                         <span>{isConverted ? '✓ บรรจุแล้ว (พนักงานประจำ)' : '🎉 บรรจุพนักงานประจำ (ออกรหัส 10 หลัก)'}</span>
                                     </button>
                                 )}
@@ -269,7 +333,14 @@
                 try {
                     const res = await fetch(GAS_WEB_APP_URL);
                     const text = await res.text();
-                    let data = JSON.parse(text);
+                    let data;
+                    try {
+                        data = JSON.parse(text);
+                    } catch (parseErr) {
+                        showToast("❌ Google Apps Script ส่งค่าไม่ใช่ JSON (โปรดตั้งค่า Who has access เป็น Anyone ตอน Deploy)");
+                        setIsFetching(false);
+                        return;
+                    }
 
                     if (data && data.error) {
                         showToast(`❌ Google Apps Script แจ้งข้อผิดพลาด: ${data.error}`);
@@ -289,7 +360,7 @@
                     }
                 } catch (err) {
                     console.error(err);
-                    showToast("❌ ไม่สามารถเชื่อมต่อกับ Google Sheets ได้ (กรุณาเช็ค URL หรือสิทธิ์ Who has access เป็น Anyone)");
+                    showToast("❌ ไม่สามารถเชื่อมต่อกับ Google Sheets ได้");
                 }
                 setIsFetching(false);
             };
@@ -297,12 +368,6 @@
             React.useEffect(() => {
                 fetchGASData();
             }, []);
-
-            React.useEffect(() => {
-                if (window.lucide && typeof window.lucide.createIcons === 'function') {
-                    window.lucide.createIcons();
-                }
-            });
 
             const handleSaveQuotas = async (updatedQuotas) => {
                 setJobQuotas(updatedQuotas);
@@ -345,12 +410,17 @@
                 handleSaveQuotas(updated);
             };
 
-            const filteredCandidates = candidates.filter(c => {
-                if (!c.created_at) return true;
-                if (startDateFilter && c.created_at < startDateFilter) return false;
-                if (endDateFilter && c.created_at > endDateFilter) return false;
-                return true;
-            });
+            // Safe filtered candidates
+            const filteredCandidates = React.useMemo(() => {
+                if (!Array.isArray(candidates)) return [];
+                return candidates.filter(c => {
+                    if (!c) return false;
+                    const dateStr = String(c.created_at || '');
+                    if (startDateFilter && dateStr && dateStr < startDateFilter) return false;
+                    if (endDateFilter && dateStr && dateStr > endDateFilter) return false;
+                    return true;
+                });
+            }, [candidates, startDateFilter, endDateFilter]);
 
             const handleQuickMoveStage = async (candId, newStage) => {
                 setCandidates(candidates.map(c => c.id === candId ? { ...c, stage: newStage } : c));
@@ -412,7 +482,7 @@
                 }
             };
 
-            const eligibleTrainees = candidates.filter(c => c.stage === 'Probation' || c.stage === 'Passed Probation');
+            const eligibleTrainees = filteredCandidates.filter(c => c.stage === 'Probation' || c.stage === 'Passed Probation');
 
             const handleAddTraining = (e) => {
                 e.preventDefault();
@@ -467,7 +537,7 @@
                         </div>
                     </aside>
 
-                    {/* Main */}
+                    {/* Main Content */}
                     <main className="flex-1 flex flex-col overflow-hidden">
                         <header className="bg-white border-b px-8 py-4 flex items-center justify-between shadow-xs">
                             <h2 className="text-base font-bold text-zinc-900">
@@ -478,7 +548,7 @@
                                 {currentTab === 'settings' && 'การตั้งค่าเป้าหมายและโควตาอัตรากำลังคน (Position Quota Settings)'}
                             </h2>
                             <button onClick={fetchGASData} disabled={isFetching} className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-bold px-4 py-2.5 rounded-xl border flex items-center space-x-2 transition shadow-xs">
-                                <i data-lucide="refresh-cw" className={`w-3.5 h-3.5 text-lnc-pink ${isFetching ? 'animate-spin' : ''}`}></i>
+                                <Icon name="refresh-cw" className={`w-3.5 h-3.5 text-lnc-pink ${isFetching ? 'animate-spin' : ''}`} />
                                 <span>{isFetching ? 'กำลังซิงก์...' : '🔄 ซิงก์ข้อมูล Google Sheets'}</span>
                             </button>
                         </header>
@@ -489,7 +559,7 @@
                                     {/* Date Range Filter Bar */}
                                     <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-sm flex flex-wrap items-center justify-between gap-4 text-xs">
                                         <div className="flex items-center space-x-2.5">
-                                            <i data-lucide="calendar" className="w-4 h-4 text-lnc-pink"></i>
+                                            <Icon name="calendar" className="w-4 h-4 text-lnc-pink" />
                                             <span className="font-bold text-zinc-800">กรองสถิติตามช่วงวันที่สมัคร:</span>
                                         </div>
                                         <div className="flex items-center space-x-2">
@@ -520,18 +590,28 @@
                                         ) : (
                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
                                                 {jobQuotas.map(jq => {
-                                                    const filledCount = candidates.filter(c => c.job_title && c.job_title.includes(jq.title.split(' - ')[0]) && (c.stage === 'Probation' || c.stage === 'Passed Probation')).length;
-                                                    const pct = jq.targetQuota > 0 ? Math.round((filledCount / jq.targetQuota) * 100) : 0;
+                                                    if (!jq) return null;
+                                                    const jqTitle = String(jq.title || '');
+                                                    const targetQuotaNum = Number(jq.targetQuota) || 1;
+                                                    const filledCount = filteredCandidates.filter(c => {
+                                                        if (!c || !c.job_title) return false;
+                                                        const cJobTitle = String(c.job_title);
+                                                        const baseJobTitle = jqTitle.split(' - ')[0] || jqTitle;
+                                                        const isMatchingJob = baseJobTitle ? cJobTitle.toLowerCase().includes(baseJobTitle.toLowerCase()) : false;
+                                                        const isPassedOrProbation = c.stage === 'Probation' || c.stage === 'Passed Probation';
+                                                        return isMatchingJob && isPassedOrProbation;
+                                                    }).length;
+                                                    const pct = targetQuotaNum > 0 ? Math.round((filledCount / targetQuotaNum) * 100) : 0;
                                                     return (
-                                                        <div key={jq.id} className="p-4 bg-zinc-50 rounded-2xl border border-zinc-200 space-y-2">
+                                                        <div key={jq.id || Math.random()} className="p-4 bg-zinc-50 rounded-2xl border border-zinc-200 space-y-2">
                                                             <div className="flex justify-between font-bold">
-                                                                <span className="text-zinc-800">{jq.title}</span>
-                                                                <span className="text-lnc-pink">{filledCount} / {jq.targetQuota} คน</span>
+                                                                <span className="text-zinc-800">{jqTitle || 'ไม่ระบุตำแหน่ง'}</span>
+                                                                <span className="text-lnc-pink">{filledCount} / {targetQuotaNum} คน</span>
                                                             </div>
                                                             <div className="w-full bg-zinc-200 h-2.5 rounded-full overflow-hidden">
                                                                 <div className="bg-emerald-600 h-full rounded-full transition-all" style={{ width: `${Math.min(pct, 100)}%` }}></div>
                                                             </div>
-                                                            <p className="text-[10px] text-zinc-400">เป้าหมายรับ: {jq.targetQuota} อัตรา</p>
+                                                            <p className="text-[10px] text-zinc-400">เป้าหมายรับ: {targetQuotaNum} อัตรา</p>
                                                         </div>
                                                     );
                                                 })}
@@ -569,14 +649,14 @@
                                             <p className="text-xs text-zinc-400 mt-1">คลิกเลือกย้ายขั้นตอน หรือกดดูประวัติเต็มรูปแบบได้อย่างสบายตา</p>
                                         </div>
                                     </div>
-                                    {candidates.length === 0 ? (
+                                    {filteredCandidates.length === 0 ? (
                                         <div className="bg-white p-12 rounded-3xl text-center border border-zinc-200 text-zinc-400 text-xs">
-                                            ยังไม่มีข้อมูลผู้สมัครใน Google Sheets (กรุณารอผู้สมัครลงทะเบียนเข้ามา หรือกดปุ่มซิงก์ข้อมูลด้านบน)
+                                            ยังไม่มีข้อมูลผู้สมัครในระบบ Google Sheets
                                         </div>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-9 gap-3 overflow-x-auto pb-4 custom-scrollbar">
                                             {ATS_STAGES.map(stage => {
-                                                const stageCandidates = candidates.filter(c => c.stage === stage.id);
+                                                const stageCandidates = filteredCandidates.filter(c => c.stage === stage.id);
                                                 return (
                                                     <div key={stage.id} className="p-3.5 rounded-2xl border min-w-[210px] flex flex-col h-[600px] bg-zinc-100/70 border-zinc-200">
                                                         <div className="flex items-center justify-between pb-2 mb-2 border-b">
@@ -760,7 +840,7 @@
                                         ) : (
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                                                 {jobQuotas.map(q => (
-                                                    <div key={q.id} className="p-4 bg-zinc-50 rounded-2xl border border-zinc-200 flex items-center justify-between">
+                                                    <div key={q.id || Math.random()} className="p-4 bg-zinc-50 rounded-2xl border border-zinc-200 flex items-center justify-between">
                                                         <div>
                                                             <h4 className="font-bold text-zinc-900 text-sm">{q.title}</h4>
                                                             <p className="text-[11px] text-zinc-400 mt-0.5">เป้าหมายกำลังคนอัตราเปิดรับ</p>
@@ -813,7 +893,11 @@
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        root.render(
+            <ErrorBoundary>
+                <App />
+            </ErrorBoundary>
+        );
     </script>
 </body>
 </html>
