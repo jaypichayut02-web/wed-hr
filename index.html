@@ -7,8 +7,6 @@
 
     <!-- Tailwind CSS -->
     <script data-cfasync="false" src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons UMD -->
-    <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
     <!-- React & ReactDOM 18 UMD -->
     <script data-cfasync="false" src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script data-cfasync="false" src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -43,14 +41,8 @@
     <div id="root"></div>
 
     <script data-cfasync="false" type="text/babel" data-presets="react" data-type="module">
-        /* STREAMING_CHUNK:Configuring Google Apps Script Web App URL endpoint... */
-        // ------------------------------------------------------------------------
-        // 🔑 วาง Web App URL จาก Google Apps Script (doGet/doPost) ที่นี่
-        // ------------------------------------------------------------------------
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyIYzxtjVFd3rwMsvO-YCgL-yZg2CGi3VlVKqyvCEgxqodGxg9Zd5jXpYHFUbrujCWW1w/exec";
-        // ------------------------------------------------------------------------
-
-        const QUOTA_STORAGE_KEY = 'lnc_job_quotas_settings_v1';
+        const QUOTA_STORAGE_KEY = 'lnc_job_quotas_settings_v2';
 
         const ATS_STAGES = [
             { id: 'Application', title: '1. รับใบสมัคร', badgeColor: 'bg-zinc-100 text-zinc-800' },
@@ -64,7 +56,39 @@
             { id: 'Rejected', title: 'ไม่ผ่านการคัดเลือก', badgeColor: 'bg-rose-50 text-rose-700' }
         ];
 
-        /* STREAMING_CHUNK:Defining reusable sidebar navigation item component... */
+        function Icon({ name, className = "w-4 h-4" }) {
+            switch (name) {
+                case 'layout-dashboard':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>;
+                case 'users':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>;
+                case 'user-check':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7zm8-1l2 2-4 4" /></svg>;
+                case 'book-open':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>;
+                case 'settings':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+                case 'refresh-cw':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>;
+                case 'calendar':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
+                case 'clock':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+                case 'book':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>;
+                case 'user':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>;
+                case 'compass':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-13h2v6h-2zm0 8h2v2h-2z" /></svg>;
+                case 'file-text':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>;
+                case 'external-link':
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>;
+                default:
+                    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><circle cx="12" cy="12" r="9" /></svg>;
+            }
+        }
+
         function NavItem({ icon, label, badge, active, onClick }) {
             return (
                 <button
@@ -76,7 +100,7 @@
                     }`}
                 >
                     <div className="flex items-center space-x-2.5">
-                        <i data-lucide={icon} className={`w-4 h-4 ${active ? 'text-white' : 'text-zinc-400'}`}></i>
+                        <Icon name={icon} className={`w-4 h-4 ${active ? 'text-white' : 'text-zinc-400'}`} />
                         <span>{label}</span>
                     </div>
                     {badge !== undefined && (
@@ -90,14 +114,13 @@
             );
         }
 
-        /* STREAMING_CHUNK:Defining statistical summary card component... */
         function StatCard({ title, value, icon, subtitle, color }) {
             return (
                 <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-sm space-y-2">
                     <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{title}</span>
                         <div className={`p-2 rounded-xl bg-zinc-50 ${color}`}>
-                            <i data-lucide={icon} className="w-5 h-5"></i>
+                            <Icon name={icon} className="w-5 h-5" />
                         </div>
                     </div>
                     <div className="flex items-baseline space-x-2">
@@ -108,7 +131,6 @@
             );
         }
 
-        /* STREAMING_CHUNK:Defining Candidate Detail Inspector Modal component... */
         function CandidateDetailModal({ candidate, onClose, onQuickMove, onConvertToEmployee, onDeleteClick, isConverted }) {
             if (!candidate) return null;
 
@@ -159,7 +181,7 @@
                             {/* Section 1: Personal Info */}
                             <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-2 flex items-center space-x-2">
-                                    <i data-lucide="user" className="w-4 h-4 text-lnc-pink"></i>
+                                    <Icon name="user" className="w-4 h-4 text-lnc-pink" />
                                     <span>1. ข้อมูลส่วนตัวและการติดต่อ</span>
                                 </h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -177,7 +199,7 @@
                             {/* Section 2: Source Tracking */}
                             <div className="bg-rose-50/60 p-5 rounded-2xl border border-rose-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b border-rose-200 pb-2 flex items-center space-x-2">
-                                    <i data-lucide="compass" className="w-4 h-4 text-lnc-pink"></i>
+                                    <Icon name="compass" className="w-4 h-4 text-lnc-pink" />
                                     <span>2. แหล่งที่มาการสมัครงาน & ผู้แนะนำ (Source Tracking)</span>
                                 </h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -189,7 +211,7 @@
                             {/* Section 3: Teaching & Branch */}
                             <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs space-y-3">
                                 <h4 className="font-black text-xs text-zinc-900 uppercase tracking-wider border-b pb-2 flex items-center space-x-2">
-                                    <i data-lucide="book-open" className="w-4 h-4 text-lnc-pink"></i>
+                                    <Icon name="book-open" className="w-4 h-4 text-lnc-pink" />
                                     <span>3. คุณสมบัติการสอนและสาขา</span>
                                 </h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -204,7 +226,7 @@
                             <div className="p-4 bg-zinc-900 text-white rounded-2xl flex items-center justify-between shadow-md">
                                 <div className="flex items-center space-x-3">
                                     <div className="p-2.5 bg-lnc-pink text-white rounded-xl">
-                                        <i data-lucide="file-text" className="w-5 h-5"></i>
+                                        <Icon name="file-text" className="w-5 h-5" />
                                     </div>
                                     <div>
                                         <h5 className="font-bold text-xs">เอกสาร Resume / Portfolio / Google Drive</h5>
@@ -214,7 +236,7 @@
                                 {candidate.resume_url ? (
                                     <a href={candidate.resume_url} target="_blank" rel="noreferrer" className="bg-lnc-pink hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center space-x-1.5 transition shadow-sm">
                                         <span>เปิดดูเอกสาร</span>
-                                        <i data-lucide="external-link" className="w-3.5 h-3.5"></i>
+                                        <Icon name="external-link" className="w-3.5 h-3.5" />
                                     </a>
                                 ) : (
                                     <span className="text-xs text-zinc-400 italic">ไม่มีไฟล์แนบ</span>
@@ -238,7 +260,7 @@
                                                 : 'bg-emerald-600 hover:bg-emerald-700 text-white'
                                         }`}
                                     >
-                                        <i data-lucide="user-check" className="w-4 h-4"></i>
+                                        <Icon name="user-check" className="w-4 h-4" />
                                         <span>{isConverted ? '✓ บรรจุแล้ว (พนักงานประจำ)' : '🎉 บรรจุพนักงานประจำ (ออกรหัส 10 หลัก)'}</span>
                                     </button>
                                 )}
@@ -249,10 +271,12 @@
             );
         }
 
-        /* STREAMING_CHUNK:Defining main App component with state management and tabs... */
         function App() {
             const [currentTab, setCurrentTab] = React.useState('dashboard');
-            const [candidates, setCandidates] = React.useState([]);
+            const [candidates, setCandidates] = React.useState([
+                { id: 'LNC-1001', full_name: 'ครูพี่เบสท์ (ชยุตม์ พัชรเจริญ)', nickname: 'เบสท์', job_title: 'คุณครูประจำ - คณิตศาสตร์', source: 'เพจ Facebook', stage: 'Application', created_at: '2026-08-10', phone: '0812345678', email: 'best@gmail.com', line_id: 'bestmath', resume_url: 'https://google.com' },
+                { id: 'LNC-1002', full_name: 'คุณณัฐพล เรียนดี', nickname: 'ตั้ม', job_title: 'ติวเตอร์ (พาร์ทไทม์) - ฟิสิกส์', source: 'เพื่อนแนะนำ', stage: 'Probation', created_at: '2026-08-11', phone: '0898765432', email: 'tum@gmail.com', line_id: 'tumm99', resume_url: 'https://google.com' }
+            ]);
             const [employees, setEmployees] = React.useState([
                 { id: 'e1', empCode: '8491023746', name: 'ครูพี่เอก (เอกชัย วิเศษ)', role: 'Academic Head', dept: 'Academic/Tutor', branchName: 'Happitat บางนา', status: 'Passed Probation', source: 'เพื่อนแนะนำ' }
             ]);
@@ -260,7 +284,6 @@
                 { id: 't1', empName: 'ครูพี่เอก (เอกชัย วิเศษ)', course: 'Active Learning & AI Teaching', date: '2026-09-01', status: 'In Progress', score: '-' }
             ]);
 
-            // Load Job Quotas Settings from localStorage or default
             const [jobQuotas, setJobQuotas] = React.useState(() => {
                 try {
                     const saved = localStorage.getItem(QUOTA_STORAGE_KEY);
@@ -280,20 +303,15 @@
                 }
             });
 
-            // New Job Quota Form States
             const [newJobTitle, setNewJobTitle] = React.useState('');
             const [newTargetQuota, setNewTargetQuota] = React.useState(5);
-
             const [isFetching, setIsFetching] = React.useState(false);
             const [toast, setToast] = React.useState(null);
 
-            // Date Range Filter States
             const [startDateFilter, setStartDateFilter] = React.useState('');
             const [endDateFilter, setEndDateFilter] = React.useState('');
-
             const [selectedCandidateDetail, setSelectedCandidateDetail] = React.useState(null);
 
-            // Training Form State
             const [selectedEmpName, setSelectedEmpName] = React.useState('');
             const [courseName, setCourseName] = React.useState('');
             const [trainingDate, setTrainingDate] = React.useState('');
@@ -305,7 +323,7 @@
 
             const fetchGASData = async () => {
                 if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) {
-                    showToast("⚠️ กรุณานำ Web App URL จาก Google Apps Script มาใส่ในโค้ดก่อน");
+                    showToast("ℹ️ ใช้ข้อมูลจำลอง (Demo Mode) สามารถเชื่อม Google Sheets ได้ทันทีเมื่อใส่ Web App URL");
                     return;
                 }
                 setIsFetching(true);
@@ -323,17 +341,6 @@
                 setIsFetching(false);
             };
 
-            React.useEffect(() => {
-                fetchGASData();
-            }, []);
-
-            React.useEffect(() => {
-                if (window.lucide && typeof window.lucide.createIcons === 'function') {
-                    window.lucide.createIcons();
-                }
-            });
-
-            // Save Quotas to LocalStorage whenever they change
             const handleSaveQuotas = (updatedQuotas) => {
                 setJobQuotas(updatedQuotas);
                 try {
@@ -369,7 +376,6 @@
                 handleSaveQuotas(updated);
             };
 
-            // Filter candidates by date range if provided
             const filteredCandidates = candidates.filter(c => {
                 if (!c.created_at) return true;
                 if (startDateFilter && c.created_at < startDateFilter) return false;
@@ -377,7 +383,6 @@
                 return true;
             });
 
-            // Flexible Stage Move (Direct from anywhere)
             const handleQuickMoveStage = async (candId, newStage) => {
                 setCandidates(candidates.map(c => c.id === candId ? { ...c, stage: newStage } : c));
                 if (selectedCandidateDetail && selectedCandidateDetail.id === candId) {
@@ -397,7 +402,6 @@
                 }
             };
 
-            // Convert Candidate to Official Employee with strict duplicate prevention lock
             const handleConvertToEmployee = (cand) => {
                 const alreadyExists = employees.some(e => e.name.includes(cand.full_name));
                 if (alreadyExists) {
@@ -467,7 +471,6 @@
                 return { name: src, count, passedCount };
             });
 
-            /* STREAMING_CHUNK:Rendering layout shell with sidebar navigation and main content views... */
             return (
                 <div className="flex h-screen overflow-hidden bg-zinc-50">
                     {/* Sidebar */}
@@ -491,7 +494,7 @@
                             </nav>
                         </div>
                         <div className="p-4 border-t border-zinc-800 text-[10px] text-zinc-400">
-                            Google Sheets Live Sync Connected
+                            Google Sheets Live Sync Ready
                         </div>
                     </aside>
 
@@ -506,7 +509,7 @@
                                 {currentTab === 'settings' && 'การตั้งค่าเป้าหมายและโควตาอัตรากำลังคน (Position Quota Settings)'}
                             </h2>
                             <button onClick={fetchGASData} disabled={isFetching} className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-bold px-4 py-2.5 rounded-xl border flex items-center space-x-2 transition shadow-xs">
-                                <i data-lucide="refresh-cw" className={`w-3.5 h-3.5 text-lnc-pink ${isFetching ? 'animate-spin' : ''}`}></i>
+                                <Icon name="refresh-cw" className={`w-3.5 h-3.5 text-lnc-pink ${isFetching ? 'animate-spin' : ''}`} />
                                 <span>{isFetching ? 'กำลังซิงก์...' : '🔄 ซิงก์ข้อมูล Google Sheets'}</span>
                             </button>
                         </header>
@@ -517,7 +520,7 @@
                                     {/* Date Range Filter Bar */}
                                     <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-sm flex flex-wrap items-center justify-between gap-4 text-xs">
                                         <div className="flex items-center space-x-2.5">
-                                            <i data-lucide="calendar" className="w-4 h-4 text-lnc-pink"></i>
+                                            <Icon name="calendar" className="w-4 h-4 text-lnc-pink" />
                                             <span className="font-bold text-zinc-800">กรองสถิติตามช่วงวันที่สมัคร:</span>
                                         </div>
                                         <div className="flex items-center space-x-2">
